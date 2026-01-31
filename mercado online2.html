@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mini Tienda</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;margin:0;background:#f4efe9}
+header{background:#6b4f3f;color:#fff;padding:15px;display:flex;justify-content:space-between}
+section{padding:20px}
+.producto{background:#fff;padding:10px;margin-bottom:10px;border-radius:6px;display:flex;gap:10px}
+.producto img{width:80px;height:80px;border-radius:6px;object-fit:cover}
+button{background:#6b4f3f;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
+#carrito{position:fixed;right:10px;top:80px;background:#fff;width:260px;padding:10px;border-radius:6px;box-shadow:0 0 6px rgba(0,0,0,.2)}
+#whatsapp{position:fixed;bottom:20px;right:20px;background:#25d366;color:#fff;padding:15px;border-radius:50%;text-decoration:none}
+#ajustes{position:fixed;top:0;right:-420px;width:400px;height:100%;background:#fff;padding:15px;overflow:auto;transition:.3s;z-index:100}
+input{width:100%;margin-bottom:6px;padding:6px}
+hr{margin:10px 0}
+</style>
+</head>
+
+<body>
+
+<header>
+<b id="nombreTienda">Cafetería El Aroma</b>
+<span onclick="abrirAjustes()" style="cursor:pointer;font-size:22px">⚙️</span>
+</header>
+
+<section id="productos"></section>
+
+<div id="carrito">
+<b>🛒 Carrito</b>
+<ul id="lista"></ul>
+<b>Total: $<span id="total">0.00</span></b><br><br>
+<button onclick="confirmar()">Confirmar pedido</button>
+</div>
+
+<a id="whatsapp" target="_blank">💬</a>
+
+<!-- AJUSTES -->
+<div id="ajustes">
+<h3>Ajustes</h3>
+
+<label>Nombre tienda</label>
+<input id="tiendaInput">
+
+<label>WhatsApp</label>
+<input id="wpInput">
+
+<hr>
+<h4>Productos</h4>
+<div id="editorProductos"></div>
+<button onclick="agregarProducto()">➕ Agregar producto</button>
+
+<hr>
+<h4>Cambiar contraseña</h4>
+<input id="nuevaClave" type="password" placeholder="Nueva clave">
+<input id="confirmarClave" type="password" placeholder="Confirmar clave">
+
+<button onclick="guardar()">Guardar</button>
+<button onclick="cerrarAjustes()" style="background:#999">Cerrar</button>
+</div>
+
+<script>
+let claveCorrecta="0012"
+let whatsappNumero="5773430"
+
+let productos=[
+ {nombre:"Café Espresso",precio:2.5,img:"https://via.placeholder.com/80",cant:0},
+ {nombre:"Pastel Chocolate",precio:3,img:"https://via.placeholder.com/80",cant:0},
+ {nombre:"Latte",precio:3.5,img:"https://via.placeholder.com/80",cant:0}
+]
+
+function render(){
+ let html=""
+ productos.forEach((p,i)=>{
+  html+=`
+  <div class="producto">
+   <img src="${p.img}">
+   <div>
+    <b>${p.nombre}</b><br>$${p.precio.toFixed(2)}<br>
+    <button onclick="menos(${i})">−</button>
+    <button onclick="mas(${i})">+</button>
+   </div>
+  </div>`
+ })
+ document.getElementById("productos").innerHTML=html
+ actualizarCarrito()
+}
+
+function renderEditor(){
+ let html=""
+ productos.forEach((p,i)=>{
+  html+=`
+  <input value="${p.nombre}" oninput="productos[${i}].nombre=this.value">
+  <input type="number" step="0.01" value="${p.precio}" oninput="productos[${i}].precio=parseFloat(this.value)">
+  <input type="file" accept="image/*" onchange="cargarImagen(event,${i})">
+  <img src="${p.img}" style="width:60px;margin-bottom:6px">
+  <button onclick="productos.splice(${i},1);render();renderEditor()">🗑️ Eliminar</button>
+  <hr>`
+ })
+ editorProductos.innerHTML=html
+}
+
+function cargarImagen(e,i){
+ let file=e.target.files[0]
+ if(!file)return
+ let reader=new FileReader()
+ reader.onload=()=>{productos[i].img=reader.result;render();renderEditor()}
+ reader.readAsDataURL(file)
+}
+
+function agregarProducto(){
+ productos.push({nombre:"Nuevo producto",precio:1,img:"https://via.placeholder.com/80",cant:0})
+ render()
+ renderEditor()
+}
+
+function mas(i){productos[i].cant++;actualizarCarrito()}
+function menos(i){if(productos[i].cant>0)productos[i].cant--;actualizarCarrito()}
+
+function actualizarCarrito(){
+ let listaHTML=""
+ let total=0
+ let mensaje=[]
+
+ productos.forEach(p=>{
+  if(p.cant>0){
+   let sub=p.cant*p.precio
+   listaHTML+=`<li>${p.nombre} x${p.cant} = $${sub.toFixed(2)}</li>`
+   mensaje.push(`${p.nombre} x${p.cant} ($${sub.toFixed(2)})`)
+   total+=sub
+  }
+ })
+
+ document.getElementById("lista").innerHTML=listaHTML || "<li>Vacío</li>"
+ document.getElementById("total").innerText=total.toFixed(2)
+
+ if(total>0){
+  document.getElementById("whatsapp").href=
+   `https://wa.me/${whatsappNumero}?text=${encodeURIComponent("Pedido:\n"+mensaje.join("\n")+"\nTotal: $"+total.toFixed(2))}`
+ }
+}
+
+function confirmar(){
+ if(document.getElementById("total").innerText==="0.00"){
+  alert("Carrito vacío")
+  return
+ }
+ window.open(document.getElementById("whatsapp").href)
+}
+
+function abrirAjustes(){
+ let c=prompt("Clave:")
+ if(c===claveCorrecta){
+  ajustes.style.right="0px"
+  renderEditor()
+ } else alert("Clave incorrecta")
+}
+function cerrarAjustes(){ajustes.style.right="-420px"}
+
+function guardar(){
+ if(tiendaInput.value) nombreTienda.innerText=tiendaInput.value
+ if(wpInput.value) whatsappNumero=wpInput.value
+
+ if(nuevaClave.value){
+  if(nuevaClave.value!==confirmarClave.value){alert("No coinciden");return}
+  claveCorrecta=nuevaClave.value
+ }
+
+ cerrarAjustes()
+}
+
+render()
+</script>
+
+</body>
+</html>
