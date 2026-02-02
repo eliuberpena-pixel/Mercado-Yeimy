@@ -3,193 +3,222 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Tienda</title>
+<title>Mini Tienda Avanzada</title>
 <style>
 body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
 .hidden { display:none; }
 header { background: #0a7cff; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
 button { padding: 8px 12px; border:none; border-radius:5px; background:#0a7cff; color:white; margin:2px; }
 input, select { width:100%; padding:8px; margin:5px 0; }
-#productos { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:10px; padding:10px; }
+#productosDiv { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:10px; padding:10px; }
 .producto { background:white; border-radius:10px; padding:10px; text-align:center; }
 .producto img { width:100%; border-radius:10px; }
-#carritoPanel { position:fixed; bottom:0; left:0; right:0; background:white; max-height:80%; overflow:auto; border-top:2px solid #ccc; display:none; padding:10px; }
+#carritoPanel, #perfilCliente, #historialCliente { padding:10px; background:#fff; margin:10px; border-radius:10px; }
+#menuCliente { position:fixed; bottom:0; left:0; right:0; background:#0a7cff; display:flex; justify-content:space-around; padding:10px; color:white; }
 .admin { background:#ffe0e0; padding:10px; }
 .estado { font-weight:bold; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <h2>Bienvenido</h2>
-  <div>
-    <button onclick="mostrarClienteForm()">Cliente</button>
-    <button onclick="mostrarAdminForm()">Administrador</button>
-  </div>
+<!-- INICIO DE SESIÓN -->
+<div id="login" style="text-align:center; padding:50px;">
+  <h1 id="textoInicio">Bienvenido a Mini Tienda</h1>
+  <p>Ingresa tus datos para continuar</p>
+  <input id="loginTelefono" placeholder="Teléfono">
+  <input id="loginPass" type="password" placeholder="Contraseña">
+  <button onclick="loginUsuario()">Iniciar sesión</button>
+  <hr>
+  <button onclick="mostrarRegistro()">Crear nuevo usuario</button>
+</div>
 
-  <!-- Cliente -->
-  <div id="clienteForm" class="hidden">
-    <h3>Registro / Login Cliente</h3>
-    <input id="regNombre" placeholder="Nombre">
-    <input id="regTelefono" placeholder="Teléfono">
-    <input id="regPass" type="password" placeholder="Contraseña">
-    <button onclick="registrarCliente()">Registrarse</button>
-
-    <hr>
-    <h4>Ya tienes cuenta?</h4>
-    <input id="loginTelefono" placeholder="Teléfono">
-    <input id="loginPass" type="password" placeholder="Contraseña">
-    <button onclick="loginCliente()">Iniciar sesión</button>
-  </div>
-
-  <!-- Admin -->
-  <div id="adminForm" class="hidden">
-    <h3>Administrador</h3>
-    <input type="text" id="adminNumero" placeholder="Número">
-    <input type="password" id="adminPass" placeholder="Contraseña">
-    <button onclick="loginAdmin()">Entrar</button>
-  </div>
+<!-- PANEL DE REGISTRO -->
+<div id="registroPanel" class="hidden" style="text-align:center; padding:20px;">
+  <h3>Registro de nuevo cliente</h3>
+  <input id="regNombre" placeholder="Nombre">
+  <input id="regTelefono" placeholder="Teléfono">
+  <input id="regPass" type="password" placeholder="Contraseña">
+  <button onclick="registrarCliente()">Registrar</button>
+  <button onclick="cerrarRegistro()">Cancelar</button>
 </div>
 
 <!-- TIENDA -->
 <div id="tienda" class="hidden">
-
 <header>
   <span id="nombreTiendaHeader">Mini Tienda</span>
   <div>
-    <button onclick="abrirCarrito()">Carrito</button>
-    <button id="btnAdmin" class="hidden" onclick="abrirAdmin()">⚙️</button>
+    <button id="btnAdmin" class="hidden" onclick="abrirAdmin()">⚙️ Ajustes</button>
   </div>
 </header>
 
-<select onchange="filtrarCategoria(this.value)">
-  <option value="todos">Todos</option>
-  <option value="cafe">Café</option>
-  <option value="pan">Panadería</option>
-</select>
+<!-- Productos -->
+<div id="productosDiv"></div>
 
-<div id="productos"></div>
-
-</div>
-
-<!-- PERFIL DEL CLIENTE -->
-<div id="perfilCliente" class="hidden admin" style="background:#e0f7ff;padding:10px;">
+<!-- Perfil del cliente -->
+<div id="perfilCliente" class="hidden">
   <h3>Mi perfil</h3>
-  <label>Nombre:</label>
-  <input id="perfilNombre">
-  <label>Teléfono:</label>
-  <input id="perfilTelefono">
-  <label>Contraseña:</label>
-  <input id="perfilPassword" type="password">
+  <input id="perfilNombre" placeholder="Nombre">
+  <input id="perfilTelefono" placeholder="Teléfono">
+  <input id="perfilPassword" type="password" placeholder="Contraseña">
   <button onclick="guardarPerfil()">Guardar perfil</button>
 </div>
 
-<!-- Historial del cliente -->
-<div id="historialCliente" class="hidden admin" style="background:#f0ffe0;padding:10px;">
+<!-- Historial de pedidos -->
+<div id="historialCliente" class="hidden">
   <h3>Mis pedidos</h3>
   <div id="listaHistorial"></div>
 </div>
 
-<!-- CARRITO -->
-<div id="carritoPanel">
+<!-- Carrito -->
+<div id="carritoPanel" class="hidden">
   <h3>🛒 Carrito</h3>
   <div id="listaCarrito"></div>
   <p>Total: $<span id="totalCarrito">0</span></p>
   <button onclick="enviarPedido()">Enviar pedido</button>
-  <button onclick="cerrarCarrito()">Seguir comprando</button>
+  <button onclick="mostrarSeccion('productos')">Seguir comprando</button>
 </div>
 
-<!-- ADMIN -->
-<div id="adminPanel" class="hidden admin">
-  <h3>Pedidos</h3>
-  <div id="listaPedidos"></div>
+<!-- Menú de navegación -->
+<nav id="menuCliente" class="hidden">
+  <button onclick="mostrarSeccion('productos')">Productos</button>
+  <button onclick="mostrarSeccion('carrito')">Carrito</button>
+  <button onclick="mostrarSeccion('perfil')">Perfil</button>
+  <button onclick="mostrarSeccion('historial')">Pedidos</button>
+</nav>
 
-  <h3>Ajustes de tienda</h3>
+<!-- Panel admin -->
+<div id="adminPanel" class="hidden admin">
+  <h3>Panel Admin</h3>
   <label>Nombre de la tienda:</label>
-  <input id="nombreTiendaInput" placeholder="Nombre de la tienda">
+  <input id="nombreTiendaInput">
   <label>WhatsApp de contacto:</label>
-  <input id="whatsappInput" placeholder="50712345678">
+  <input id="whatsappInput">
+  <label>Texto de bienvenida:</label>
+  <input id="textoInicioInput">
+  <label>URL de fondo de inicio:</label>
+  <input id="fondoInicioInput">
   <button onclick="guardarAjustes()">Guardar ajustes</button>
+
+  <h3>Productos</h3>
+  <div id="adminProductos"></div>
 </div>
 
 <script>
+const ADMIN_NUM = "56666168";
 const ADMIN_PASS = "0012";
-const ADMIN_NUM = "56666168"; // usuario administrador
-let ajustes = JSON.parse(localStorage.getItem("ajustes")) || { nombreTienda: "Mini Tienda", whatsapp: "5070000000" };
-
-let productos = [
+let ajustes = JSON.parse(localStorage.getItem("ajustes")) || {
+  nombreTienda: "Mini Tienda",
+  whatsapp: "5070000000",
+  fondoInicio: "",
+  textoInicio: "Bienvenido a Mini Tienda"
+};
+let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+let productos = JSON.parse(localStorage.getItem("productos")) || [
   {id:1, nombre:"Café Latte", precio:2, categoria:"cafe", img:"https://via.placeholder.com/150", cantidad:1},
   {id:2, nombre:"Capuccino", precio:2.5, categoria:"cafe", img:"https://via.placeholder.com/150", cantidad:1},
   {id:3, nombre:"Pan dulce", precio:1.5, categoria:"pan", img:"https://via.placeholder.com/150", cantidad:1}
 ];
-
 let carrito = [];
 
-// Cargar ajustes al iniciar
-document.getElementById("nombreTiendaHeader").innerText = ajustes.nombreTienda;
-document.getElementById("nombreTiendaInput").value = ajustes.nombreTienda;
-document.getElementById("whatsappInput").value = ajustes.whatsapp;
-
-// Mostrar formularios
-function mostrarClienteForm(){ clienteForm.classList.remove("hidden"); adminForm.classList.add("hidden"); }
-function mostrarAdminForm(){ adminForm.classList.remove("hidden"); clienteForm.classList.add("hidden"); }
-
-// Registro cliente
-function registrarCliente(){
-  const nombre = regNombre.value.trim();
-  const telefono = regTelefono.value.trim();
-  const pass = regPass.value.trim();
-  if(!nombre || !telefono || !pass){ alert("Completa todos los campos"); return; }
-
-  let clientes = JSON.parse(localStorage.getItem("clientes"))||[];
-  if(clientes.find(c=>c.telefono===telefono)){
-    alert("Cliente ya registrado. Inicia sesión");
+// LOGIN
+function loginUsuario(){
+  const tel = document.getElementById("loginTelefono").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+  if(tel===ADMIN_NUM && pass===ADMIN_PASS){
+    localStorage.setItem("usuario", JSON.stringify({tipo:"admin", telefono:tel}));
+    iniciarTienda();
     return;
   }
-
-  clientes.push({ nombre, telefono, password: pass });
-  localStorage.setItem("clientes", JSON.stringify(clientes));
-
-  localStorage.setItem("usuario", JSON.stringify({ tipo:"cliente", nombre, telefono }));
+  let cliente = clientes.find(c=>c.telefono===tel && c.password===pass);
+  if(!cliente){ alert("Usuario o contraseña incorrectos"); return; }
+  localStorage.setItem("usuario", JSON.stringify({tipo:"cliente", telefono:tel, nombre:cliente.nombre}));
   iniciarTienda();
 }
 
-// Login cliente
-function loginCliente(){
-  const telefono = loginTelefono.value.trim();
-  const pass = loginPass.value.trim();
-
-  let clientes = JSON.parse(localStorage.getItem("clientes"))||[];
-  const cliente = clientes.find(c=>c.telefono===telefono && c.password===pass);
-
-  if(!cliente){ alert("Teléfono o contraseña incorrectos"); return; }
-
-  localStorage.setItem("usuario", JSON.stringify({ tipo:"cliente", nombre:cliente.nombre, telefono:cliente.telefono }));
-  iniciarTienda();
+// REGISTRO
+function mostrarRegistro(){ registroPanel.classList.remove("hidden"); login.classList.add("hidden"); }
+function cerrarRegistro(){ registroPanel.classList.add("hidden"); login.classList.remove("hidden"); }
+function registrarCliente(){
+  const nombre = regNombre.value.trim();
+  const tel = regTelefono.value.trim();
+  const pass = regPass.value.trim();
+  if(!nombre||!tel||!pass){ alert("Completa todos los campos"); return; }
+  if(clientes.find(c=>c.telefono===tel)){ alert("Usuario ya existe"); return; }
+  clientes.push({nombre,tel,password:pass,tipo:"cliente"});
+  localStorage.setItem("clientes",JSON.stringify(clientes));
+  alert("Usuario registrado ✅");
+  cerrarRegistro();
 }
 
-// Login admin
-function loginAdmin(){
-  const numero = adminNumero.value.trim();
-  const pass = adminPass.value.trim();
-  if(numero===ADMIN_NUM && pass===ADMIN_PASS){
-    localStorage.setItem("usuario", JSON.stringify({ tipo:"admin", numero:ADMIN_NUM }));
-    iniciarTienda();
-  } else alert("Número o contraseña incorrectos");
-}
-
-// Iniciar tienda
+// INICIAR TIENDA
 function iniciarTienda(){
-  login.classList.add("hidden");
-  tienda.classList.remove("hidden");
+  login.classList.add("hidden"); registroPanel.classList.add("hidden"); tienda.classList.remove("hidden");
+  document.body.style.background = ajustes.fondoInicio || "#f5f5f5";
+  document.getElementById("textoInicio").innerText = ajustes.textoInicio;
+  document.getElementById("nombreTiendaHeader").innerText = ajustes.nombreTienda;
   cargarProductos();
-  verificarAdmin();
-  mostrarPerfil();
-  mostrarHistorial();
+  mostrarSeccion(sessionStorage.getItem("seccionActual")||"productos");
+
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if(usuario.tipo==="admin"){ adminPanel.classList.remove("hidden"); btnAdmin.classList.remove("hidden"); renderAdminProductos(); }
+  if(usuario.tipo==="cliente"){ menuCliente.classList.remove("hidden"); mostrarPerfil(); mostrarHistorial(); }
 }
 
-// Productos
+// NAVEGACIÓN SECCIONES
+function mostrarSeccion(seccion){
+  sessionStorage.setItem("seccionActual",seccion);
+  productosDiv.classList.add("hidden"); carritoPanel.classList.add("hidden");
+  perfilCliente.classList.add("hidden"); historialCliente.classList.add("hidden");
+  if(seccion==="productos") productosDiv.classList.remove("hidden");
+  if(seccion==="carrito") carritoPanel.classList.remove("hidden");
+  if(seccion==="perfil") perfilCliente.classList.remove("hidden");
+  if(seccion==="historial") historialCliente.classList.remove("hidden");
+}
+
+// PERFIL CLIENTE
+function mostrarPerfil(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if(usuario.tipo!=="cliente") return;
+  perfilNombre.value = usuario.nombre;
+  perfilTelefono.value = usuario.telefono;
+}
+function guardarPerfil(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  let cliente = clientes.find(c=>c.telefono===usuario.telefono);
+  if(cliente){
+    cliente.nombre = perfilNombre.value || cliente.nombre;
+    cliente.telefono = perfilTelefono.value || cliente.telefono;
+    if(perfilPassword.value) cliente.password = perfilPassword.value;
+    localStorage.setItem("clientes",JSON.stringify(clientes));
+    usuario.nombre = cliente.nombre; usuario.telefono = cliente.telefono;
+    localStorage.setItem("usuario",JSON.stringify(usuario));
+    alert("Perfil actualizado ✅");
+    mostrarHistorial();
+  }
+}
+
+// HISTORIAL
+function mostrarHistorial(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if(usuario.tipo!=="cliente") return;
+  const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  const misPedidos = pedidos.filter(p=>p.cliente.telefono===usuario.telefono);
+  listaHistorial.innerHTML="";
+  misPedidos.forEach(p=>{
+    let btnCancelar = p.estado==="Pendiente"?`<button onclick="cancelarPedidoCliente(${p.id})">Cancelar</button>`:"";
+    let listaProductos="";
+    p.productos.forEach(prod=> listaProductos+=`- ${prod.nombre} x${prod.cantidad} $${(prod.precio*prod.cantidad).toFixed(2)}<br>`);
+    listaHistorial.innerHTML+=`<div style="border:1px solid #ccc; margin:5px; padding:5px; border-radius:5px;">
+      <b>Pedido #${p.id}</b><br>Fecha: ${p.fecha}<br>Productos:<br>${listaProductos}Total: $${p.total.toFixed(2)}<br>Estado: <span class="estado">${p.estado}</span><br>${btnCancelar}</div>`;
+  });
+}
+function cancelarPedidoCliente(id){
+  let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  let p = pedidos.find(x=>x.id===id); if(!p || p.estado!=="Pendiente"){ alert("No se puede"); return; }
+  p.estado="Cancelado"; localStorage.setItem("pedidos",JSON.stringify(pedidos)); alert("Pedido cancelado ✅"); mostrarHistorial();
+}
+
+// PRODUCTOS
 function cargarProductos(){
   productosDiv.innerHTML="";
   productos.forEach(p=>{
@@ -198,169 +227,63 @@ function cargarProductos(){
       <img src="${p.img}">
       <h4>${p.nombre}</h4>
       <p>$${p.precio}</p>
-      <button onclick="agregar(${p.id})">Agregar</button>
+      <button onclick="agregarCarrito(${p.id})">Agregar</button>
     </div>`;
   });
 }
-
-function agregar(id){
-  const p = productos.find(x=>x.id===id);
-  carrito.push(p);
-  alert("Agregado");
+function agregarCarrito(id){
+  const p = productos.find(x=>x.id===id); carrito.push(p); alert("Agregado ✅"); renderCarrito();
 }
 
-// Carrito
-function abrirCarrito(){carritoPanel.style.display="block"; renderCarrito();}
-function cerrarCarrito(){carritoPanel.style.display="none";}
+// CARRITO
 function renderCarrito(){
   listaCarrito.innerHTML="";
   let total=0;
-  carrito.forEach((p,i)=>{
-    total+=p.precio;
-    listaCarrito.innerHTML+=`${p.nombre} - $${p.precio} <button onclick="quitar(${i})">❌</button><br>`;
-  });
+  carrito.forEach((p,i)=>{ total+=p.precio; listaCarrito.innerHTML+=`${p.nombre} - $${p.precio} <button onclick="quitarCarrito(${i})">❌</button><br>` });
   totalCarrito.innerText = total.toFixed(2);
 }
-function quitar(i){ carrito.splice(i,1); renderCarrito(); }
+function quitarCarrito(i){ carrito.splice(i,1); renderCarrito(); }
+function enviarPedido(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const pedido = {id:Date.now(), fecha:new Date().toLocaleString(), cliente:usuario, productos:carrito, total:carrito.reduce((a,b)=>a+b.precio,0), estado:"Pendiente"};
+  let pedidos = JSON.parse(localStorage.getItem("pedidos"))||[]; pedidos.push(pedido); localStorage.setItem("pedidos",JSON.stringify(pedidos));
+  let msg=`🧾 NUEVO PEDIDO%0AID:${pedido.id}%0ACliente:${usuario.nombre}%0ATotal:$${pedido.total}`;
+  window.open(`https://wa.me/${ajustes.whatsapp}?text=${msg}`);
+  carrito=[]; renderCarrito(); mostrarSeccion("productos"); mostrarHistorial();
+}
 
-// Ajustes
+// ADMIN
+function abrirAdmin(){ adminPanel.classList.toggle("hidden"); renderAdminProductos(); }
 function guardarAjustes(){
   ajustes.nombreTienda = nombreTiendaInput.value || ajustes.nombreTienda;
   ajustes.whatsapp = whatsappInput.value || ajustes.whatsapp;
-  localStorage.setItem("ajustes", JSON.stringify(ajustes));
+  ajustes.textoInicio = textoInicioInput.value || ajustes.textoInicio;
+  ajustes.fondoInicio = fondoInicioInput.value || ajustes.fondoInicio;
+  localStorage.setItem("ajustes",JSON.stringify(ajustes));
   nombreTiendaHeader.innerText = ajustes.nombreTienda;
+  document.getElementById("textoInicio").innerText = ajustes.textoInicio;
+  document.body.style.background = ajustes.fondoInicio || "#f5f5f5";
   alert("Ajustes guardados ✅");
+  cargarProductos();
+  renderAdminProductos();
 }
-
-// Pedidos
-function enviarPedido(){
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const pedido = { id:Date.now(), fecha:new Date().toLocaleString(), cliente:usuario, productos:carrito, total:carrito.reduce((a,b)=>a+b.precio,0), estado:"Pendiente" };
-  let pedidos = JSON.parse(localStorage.getItem("pedidos"))||[];
-  pedidos.push(pedido);
-  localStorage.setItem("pedidos",JSON.stringify(pedidos));
-
-  let msg=`🧾 NUEVO PEDIDO%0AID: ${pedido.id}%0ACliente: ${usuario.nombre}%0ATotal: $${pedido.total}`;
-  window.open(`https://wa.me/${ajustes.whatsapp}?text=${msg}`);
-
-  carrito=[];
-  cerrarCarrito();
-  mostrarHistorial();
+function renderAdminProductos(){
+  adminProductos.innerHTML="";
+  productos.forEach((p,i)=> adminProductos.innerHTML+=`
+    <div style="border:1px solid #ccc; padding:5px; margin:5px;">
+      <input value="${p.nombre}" placeholder="Nombre" id="prodNombre${i}">
+      <input value="${p.precio}" placeholder="Precio" id="prodPrecio${i}">
+      <input value="${p.img}" placeholder="URL Imagen" id="prodImg${i}">
+      <button onclick="guardarProducto(${i})">Guardar</button>
+    </div>`);
 }
-
-// Admin
-function abrirAdmin(){ adminPanel.classList.toggle("hidden"); renderPedidos(); }
-function verificarAdmin(){ const u = JSON.parse(localStorage.getItem("usuario")); if(u.tipo==="admin") btnAdmin.classList.remove("hidden"); }
-function renderPedidos(){
-  let pedidos = JSON.parse(localStorage.getItem("pedidos"))||[];
-  listaPedidos.innerHTML="";
-  pedidos.forEach(p=>{
-    let botones="";
-    if(p.estado==="Pendiente") botones=`<button onclick="estado(${p.id},'Aceptado')">Aceptar</button> <button onclick="cancelarPedido(${p.id})">Cancelar</button>`;
-    listaPedidos.innerHTML+=`
-      <div>
-        <b>#${p.id}</b> ${p.cliente.nombre} - $${p.total} <span class="estado">${p.estado}</span><br>
-        ${botones}
-      </div><hr>`;
-  });
-}
-function estado(id, nuevoEstado){
-  let pedidos = JSON.parse(localStorage.getItem("pedidos"));
-  let p = pedidos.find(x=>x.id===id);
-  p.estado = nuevoEstado;
-  localStorage.setItem("pedidos",JSON.stringify(pedidos));
-
-  let msg=`✅ PEDIDO ${nuevoEstado.toUpperCase()}%0AID: ${p.id}%0ATotal: $${p.total}`;
-  window.open(`https://wa.me/${p.cliente.telefono}?text=${msg}`);
-  renderPedidos();
-}
-function cancelarPedido(id){
-  let pedidos = JSON.parse(localStorage.getItem("pedidos"));
-  let p = pedidos.find(x=>x.id===id);
-  if(p.estado!=="Pendiente"){ alert("No se puede cancelar"); return; }
-  p.estado = "Cancelado";
-  localStorage.setItem("pedidos",JSON.stringify(pedidos));
-  alert("Pedido cancelado ✅");
-  renderPedidos();
-}
-
-// Perfil cliente editable
-function mostrarPerfil(){
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
-  if(usuario.tipo!=="cliente") return;
-  perfilCliente.classList.remove("hidden");
-  perfilNombre.value = usuario.nombre;
-  perfilTelefono.value = usuario.telefono;
-}
-function guardarPerfil(){
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
-  let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-  const cliente = clientes.find(c=>c.telefono===usuario.telefono);
-
-  if(cliente){
-    cliente.nombre = perfilNombre.value || cliente.nombre;
-    cliente.telefono = perfilTelefono.value || cliente.telefono;
-    if(perfilPassword.value) cliente.password = perfilPassword.value;
-    localStorage.setItem("clientes", JSON.stringify(clientes));
-
-    usuario.nombre = cliente.nombre;
-    usuario.telefono = cliente.telefono;
-    localStorage.setItem("usuario", JSON.stringify(usuario));
-
-    alert("Perfil actualizado ✅");
-    mostrarHistorial();
-  }
-}
-
-// Historial cliente
-function mostrarHistorial(){
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
-  if(usuario.tipo!=="cliente") return;
-  historialCliente.classList.remove("hidden");
-
-  const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-  const misPedidos = pedidos.filter(p => p.cliente.telefono === usuario.telefono);
-
-  listaHistorial.innerHTML = "";
-  misPedidos.forEach(p => {
-    let btnCancelar = p.estado==="Pendiente"?`<button onclick="cancelarPedidoCliente(${p.id})">Cancelar</button>`:"";
-    let listaProductos="";
-    p.productos.forEach(prod=>{
-      listaProductos += `- ${prod.nombre} x${prod.cantidad} $${(prod.precio*prod.cantidad).toFixed(2)}<br>`;
-    });
-    listaHistorial.innerHTML += `
-      <div style="border:1px solid #ccc; margin:5px; padding:5px; border-radius:5px;">
-        <b>Pedido #${p.id}</b><br>
-        Fecha: ${p.fecha}<br>
-        Productos:<br>${listaProductos}
-        Total: $${p.total.toFixed(2)}<br>
-        Estado: <span class="estado">${p.estado}</span><br>
-        ${btnCancelar}
-      </div>`;
-  });
-}
-function cancelarPedidoCliente(id){
-  let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-  const pedido = pedidos.find(p => p.id===id);
-  if(!pedido || pedido.estado !== "Pendiente"){ alert("No se puede cancelar"); return; }
-  pedido.estado="Cancelado";
-  localStorage.setItem("pedidos", JSON.stringify(pedidos));
-  alert("Pedido cancelado ✅");
-  mostrarHistorial();
-}
-
-// Filtrar categorías
-function filtrarCategoria(cat){
-  productosDiv.innerHTML="";
-  productos.filter(p=>cat==="todos"?true:p.categoria===cat).forEach(p=>{
-    productosDiv.innerHTML+=`
-    <div class="producto">
-      <img src="${p.img}">
-      <h4>${p.nombre}</h4>
-      <p>$${p.precio}</p>
-      <button onclick="agregar(${p.id})">Agregar</button>
-    </div>`;
-  });
+function guardarProducto(i){
+  productos[i].nombre = document.getElementById(`prodNombre${i}`).value;
+  productos[i].precio = parseFloat(document.getElementById(`prodPrecio${i}`).value);
+  productos[i].img = document.getElementById(`prodImg${i}`).value;
+  localStorage.setItem("productos",JSON.stringify(productos));
+  alert("Producto actualizado ✅");
+  cargarProductos(); renderAdminProductos();
 }
 </script>
 </body>
