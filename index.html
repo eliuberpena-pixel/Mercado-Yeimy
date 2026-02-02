@@ -14,7 +14,8 @@ input, select { width:100%; padding:8px; margin:5px 0; }
 .producto { background:white; border-radius:10px; padding:10px; text-align:center; }
 .producto img { width:100%; border-radius:10px; }
 #carritoPanel, #perfilCliente, #historialCliente, #adminPanel { padding:10px; background:#fff; margin:10px; border-radius:10px; }
-#menuCliente { position:fixed; bottom:0; left:0; right:0; background:#0a7cff; display:flex; justify-content:space-around; padding:10px; color:white; }
+#menuCliente { position: fixed; bottom:0; left:0; right:0; background:#0a7cff; display:flex; justify-content:space-around; padding:10px; color:white; z-index:10; }
+.hideMenu { display:none !important; }
 .admin { background:#ffe0e0; padding:10px; }
 .estado { font-weight:bold; }
 </style>
@@ -197,6 +198,11 @@ function mostrarSeccion(seccion){
   sessionStorage.setItem("seccionActual",seccion);
   productosDiv.classList.add("hidden"); carritoPanel.classList.add("hidden");
   perfilCliente.classList.add("hidden"); historialCliente.classList.add("hidden");
+
+  // ocultar menú cuando sea carrito o historial
+  if(seccion==="carrito" || seccion==="historial") menuCliente.classList.add("hideMenu");
+  else menuCliente.classList.remove("hideMenu");
+
   if(seccion==="productos") filtrarProductos();
   if(seccion==="carrito") carritoPanel.classList.remove("hidden");
   if(seccion==="perfil") perfilCliente.classList.remove("hidden");
