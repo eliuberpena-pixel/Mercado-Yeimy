@@ -49,6 +49,7 @@ input, select { width:100%; padding:8px; margin:5px 0; }
   <span id="nombreTiendaHeader">Mini Tienda</span>
   <div>
     <button id="btnAdmin" class="hidden" onclick="abrirAdmin()">⚙️ Ajustes</button>
+    <button id="btnLogout" onclick="cerrarSesion()">Cerrar sesión</button>
   </div>
 </header>
 
@@ -179,6 +180,18 @@ function registrarCliente(){
   cerrarRegistro();
 }
 
+// --- CERRAR SESIÓN ---
+function cerrarSesion() {
+  if(confirm("¿Deseas cerrar sesión?")) {
+    localStorage.removeItem("usuario");
+    carrito = [];
+    menuCliente.classList.add("hidden");
+    adminPanel.classList.add("hidden");
+    tienda.classList.add("hidden");
+    login.classList.remove("hidden");
+  }
+}
+
 // --- INICIAR TIENDA ---
 function iniciarTienda(){
   login.classList.add("hidden"); registroPanel.classList.add("hidden"); tienda.classList.remove("hidden");
@@ -252,9 +265,7 @@ function cancelarPedidoCliente(id){
 }
 
 // --- PRODUCTOS ---
-function cargarProductos(){
-  filtrarProductos();
-}
+function cargarProductos(){ filtrarProductos(); }
 function filtrarProductos(){
   const grupo = document.getElementById("filtroGrupo").value;
   productosDiv.innerHTML = "";
@@ -339,12 +350,4 @@ function agregarNuevoProducto(){
   const precio = parseFloat(document.getElementById("nuevoPrecio").value);
   const img = document.getElementById("nuevoImg").value.trim();
   const grupo = document.getElementById("nuevoGrupo").value;
-  if(!nombre || !precio || !img){ alert("Completa todos los campos"); return; }
-  productos.push({id:Date.now(), nombre, precio, img, categoria:grupo, cantidad:1});
-  localStorage.setItem("productos",JSON.stringify(productos));
-  alert("Producto agregado ✅");
-  renderAdminProductos(); filtrarProductos();
-}
-</script>
-</body>
-</html>
+  if(!nombre || !precio || !img){ alert("Completa
