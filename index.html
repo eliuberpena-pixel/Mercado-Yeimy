@@ -2,177 +2,366 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mini Tienda</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{font-family:Arial;margin:0;background:#f4efe9}
-header{background:#6b4f3f;color:#fff;padding:15px;display:flex;justify-content:space-between}
-section{padding:20px}
-.producto{background:#fff;padding:10px;margin-bottom:10px;border-radius:6px;display:flex;gap:10px}
-.producto img{width:80px;height:80px;border-radius:6px;object-fit:cover}
-button{background:#6b4f3f;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
-#carrito{position:fixed;right:10px;top:80px;background:#fff;width:260px;padding:10px;border-radius:6px;box-shadow:0 0 6px rgba(0,0,0,.2)}
-#whatsapp{position:fixed;bottom:20px;right:20px;background:#25d366;color:#fff;padding:15px;border-radius:50%;text-decoration:none}
-#ajustes{position:fixed;top:0;right:-420px;width:400px;height:100%;background:#fff;padding:15px;overflow:auto;transition:.3s;z-index:100}
-input{width:100%;margin-bottom:6px;padding:6px}
-hr{margin:10px 0}
+body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+.hidden { display:none; }
+header { background: #0a7cff; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+button { padding: 8px 12px; border:none; border-radius:5px; background:#0a7cff; color:white; margin:2px; }
+input, select { width:100%; padding:8px; margin:5px 0; }
+#productos { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:10px; padding:10px; }
+.producto { background:white; border-radius:10px; padding:10px; text-align:center; }
+.producto img { width:100%; border-radius:10px; }
+#carritoPanel { position:fixed; bottom:0; left:0; right:0; background:white; max-height:80%; overflow:auto; border-top:2px solid #ccc; display:none; padding:10px; }
+.admin { background:#ffe0e0; padding:10px; }
+.estado { font-weight:bold; }
 </style>
 </head>
-
 <body>
 
-<header>
-<b id="nombreTienda">Cafetería El Aroma</b>
-<span onclick="abrirAjustes()" style="cursor:pointer;font-size:22px">⚙️</span>
-</header>
+<!-- LOGIN -->
+<div id="login">
+  <h2>Bienvenido</h2>
+  <div>
+    <button onclick="mostrarClienteForm()">Cliente</button>
+    <button onclick="mostrarAdminForm()">Administrador</button>
+  </div>
 
-<section id="productos"></section>
+  <!-- Cliente -->
+  <div id="clienteForm" class="hidden">
+    <h3>Registro / Login Cliente</h3>
+    <input id="regNombre" placeholder="Nombre">
+    <input id="regTelefono" placeholder="Teléfono">
+    <input id="regPass" type="password" placeholder="Contraseña">
+    <button onclick="registrarCliente()">Registrarse</button>
 
-<div id="carrito">
-<b>🛒 Carrito</b>
-<ul id="lista"></ul>
-<b>Total: $<span id="total">0.00</span></b><br><br>
-<button onclick="confirmar()">Confirmar pedido</button>
+    <hr>
+    <h4>Ya tienes cuenta?</h4>
+    <input id="loginTelefono" placeholder="Teléfono">
+    <input id="loginPass" type="password" placeholder="Contraseña">
+    <button onclick="loginCliente()">Iniciar sesión</button>
+  </div>
+
+  <!-- Admin -->
+  <div id="adminForm" class="hidden">
+    <h3>Administrador</h3>
+    <input type="text" id="adminNumero" placeholder="Número">
+    <input type="password" id="adminPass" placeholder="Contraseña">
+    <button onclick="loginAdmin()">Entrar</button>
+  </div>
 </div>
 
-<a id="whatsapp" target="_blank">💬</a>
+<!-- TIENDA -->
+<div id="tienda" class="hidden">
 
-<!-- AJUSTES -->
-<div id="ajustes">
-<h3>Ajustes</h3>
+<header>
+  <span id="nombreTiendaHeader">Mini Tienda</span>
+  <div>
+    <button onclick="abrirCarrito()">Carrito</button>
+    <button id="btnAdmin" class="hidden" onclick="abrirAdmin()">⚙️</button>
+  </div>
+</header>
 
-<label>Nombre tienda</label>
-<input id="tiendaInput">
+<select onchange="filtrarCategoria(this.value)">
+  <option value="todos">Todos</option>
+  <option value="cafe">Café</option>
+  <option value="pan">Panadería</option>
+</select>
 
-<label>WhatsApp</label>
-<input id="wpInput">
+<div id="productos"></div>
 
-<hr>
-<h4>Productos</h4>
-<div id="editorProductos"></div>
-<button onclick="agregarProducto()">➕ Agregar producto</button>
+</div>
 
-<hr>
-<h4>Cambiar contraseña</h4>
-<input id="nuevaClave" type="password" placeholder="Nueva clave">
-<input id="confirmarClave" type="password" placeholder="Confirmar clave">
+<!-- PERFIL DEL CLIENTE -->
+<div id="perfilCliente" class="hidden admin" style="background:#e0f7ff;padding:10px;">
+  <h3>Mi perfil</h3>
+  <label>Nombre:</label>
+  <input id="perfilNombre">
+  <label>Teléfono:</label>
+  <input id="perfilTelefono">
+  <label>Contraseña:</label>
+  <input id="perfilPassword" type="password">
+  <button onclick="guardarPerfil()">Guardar perfil</button>
+</div>
 
-<button onclick="guardar()">Guardar</button>
-<button onclick="cerrarAjustes()" style="background:#999">Cerrar</button>
+<!-- Historial del cliente -->
+<div id="historialCliente" class="hidden admin" style="background:#f0ffe0;padding:10px;">
+  <h3>Mis pedidos</h3>
+  <div id="listaHistorial"></div>
+</div>
+
+<!-- CARRITO -->
+<div id="carritoPanel">
+  <h3>🛒 Carrito</h3>
+  <div id="listaCarrito"></div>
+  <p>Total: $<span id="totalCarrito">0</span></p>
+  <button onclick="enviarPedido()">Enviar pedido</button>
+  <button onclick="cerrarCarrito()">Seguir comprando</button>
+</div>
+
+<!-- ADMIN -->
+<div id="adminPanel" class="hidden admin">
+  <h3>Pedidos</h3>
+  <div id="listaPedidos"></div>
+
+  <h3>Ajustes de tienda</h3>
+  <label>Nombre de la tienda:</label>
+  <input id="nombreTiendaInput" placeholder="Nombre de la tienda">
+  <label>WhatsApp de contacto:</label>
+  <input id="whatsappInput" placeholder="50712345678">
+  <button onclick="guardarAjustes()">Guardar ajustes</button>
 </div>
 
 <script>
-let claveCorrecta="0012"
-let whatsappNumero="5773430"
+const ADMIN_PASS = "0012";
+const ADMIN_NUM = "56666168"; // usuario administrador
+let ajustes = JSON.parse(localStorage.getItem("ajustes")) || { nombreTienda: "Mini Tienda", whatsapp: "5070000000" };
 
-let productos=[
- {nombre:"Café Espresso",precio:2.5,img:"https://via.placeholder.com/80",cant:0},
- {nombre:"Pastel Chocolate",precio:3,img:"https://via.placeholder.com/80",cant:0},
- {nombre:"Latte",precio:3.5,img:"https://via.placeholder.com/80",cant:0}
-]
+let productos = [
+  {id:1, nombre:"Café Latte", precio:2, categoria:"cafe", img:"https://via.placeholder.com/150", cantidad:1},
+  {id:2, nombre:"Capuccino", precio:2.5, categoria:"cafe", img:"https://via.placeholder.com/150", cantidad:1},
+  {id:3, nombre:"Pan dulce", precio:1.5, categoria:"pan", img:"https://via.placeholder.com/150", cantidad:1}
+];
 
-function render(){
- let html=""
- productos.forEach((p,i)=>{
-  html+=`
-  <div class="producto">
-   <img src="${p.img}">
-   <div>
-    <b>${p.nombre}</b><br>$${p.precio.toFixed(2)}<br>
-    <button onclick="menos(${i})">−</button>
-    <button onclick="mas(${i})">+</button>
-   </div>
-  </div>`
- })
- document.getElementById("productos").innerHTML=html
- actualizarCarrito()
-}
+let carrito = [];
 
-function renderEditor(){
- let html=""
- productos.forEach((p,i)=>{
-  html+=`
-  <input value="${p.nombre}" oninput="productos[${i}].nombre=this.value">
-  <input type="number" step="0.01" value="${p.precio}" oninput="productos[${i}].precio=parseFloat(this.value)">
-  <input type="file" accept="image/*" onchange="cargarImagen(event,${i})">
-  <img src="${p.img}" style="width:60px;margin-bottom:6px">
-  <button onclick="productos.splice(${i},1);render();renderEditor()">🗑️ Eliminar</button>
-  <hr>`
- })
- editorProductos.innerHTML=html
-}
+// Cargar ajustes al iniciar
+document.getElementById("nombreTiendaHeader").innerText = ajustes.nombreTienda;
+document.getElementById("nombreTiendaInput").value = ajustes.nombreTienda;
+document.getElementById("whatsappInput").value = ajustes.whatsapp;
 
-function cargarImagen(e,i){
- let file=e.target.files[0]
- if(!file)return
- let reader=new FileReader()
- reader.onload=()=>{productos[i].img=reader.result;render();renderEditor()}
- reader.readAsDataURL(file)
-}
+// Mostrar formularios
+function mostrarClienteForm(){ clienteForm.classList.remove("hidden"); adminForm.classList.add("hidden"); }
+function mostrarAdminForm(){ adminForm.classList.remove("hidden"); clienteForm.classList.add("hidden"); }
 
-function agregarProducto(){
- productos.push({nombre:"Nuevo producto",precio:1,img:"https://via.placeholder.com/80",cant:0})
- render()
- renderEditor()
-}
+// Registro cliente
+function registrarCliente(){
+  const nombre = regNombre.value.trim();
+  const telefono = regTelefono.value.trim();
+  const pass = regPass.value.trim();
+  if(!nombre || !telefono || !pass){ alert("Completa todos los campos"); return; }
 
-function mas(i){productos[i].cant++;actualizarCarrito()}
-function menos(i){if(productos[i].cant>0)productos[i].cant--;actualizarCarrito()}
-
-function actualizarCarrito(){
- let listaHTML=""
- let total=0
- let mensaje=[]
-
- productos.forEach(p=>{
-  if(p.cant>0){
-   let sub=p.cant*p.precio
-   listaHTML+=`<li>${p.nombre} x${p.cant} = $${sub.toFixed(2)}</li>`
-   mensaje.push(`${p.nombre} x${p.cant} ($${sub.toFixed(2)})`)
-   total+=sub
+  let clientes = JSON.parse(localStorage.getItem("clientes"))||[];
+  if(clientes.find(c=>c.telefono===telefono)){
+    alert("Cliente ya registrado. Inicia sesión");
+    return;
   }
- })
 
- document.getElementById("lista").innerHTML=listaHTML || "<li>Vacío</li>"
- document.getElementById("total").innerText=total.toFixed(2)
+  clientes.push({ nombre, telefono, password: pass });
+  localStorage.setItem("clientes", JSON.stringify(clientes));
 
- if(total>0){
-  document.getElementById("whatsapp").href=
-   `https://wa.me/${whatsappNumero}?text=${encodeURIComponent("Pedido:\n"+mensaje.join("\n")+"\nTotal: $"+total.toFixed(2))}`
- }
+  localStorage.setItem("usuario", JSON.stringify({ tipo:"cliente", nombre, telefono }));
+  iniciarTienda();
 }
 
-function confirmar(){
- if(document.getElementById("total").innerText==="0.00"){
-  alert("Carrito vacío")
-  return
- }
- window.open(document.getElementById("whatsapp").href)
+// Login cliente
+function loginCliente(){
+  const telefono = loginTelefono.value.trim();
+  const pass = loginPass.value.trim();
+
+  let clientes = JSON.parse(localStorage.getItem("clientes"))||[];
+  const cliente = clientes.find(c=>c.telefono===telefono && c.password===pass);
+
+  if(!cliente){ alert("Teléfono o contraseña incorrectos"); return; }
+
+  localStorage.setItem("usuario", JSON.stringify({ tipo:"cliente", nombre:cliente.nombre, telefono:cliente.telefono }));
+  iniciarTienda();
 }
 
-function abrirAjustes(){
- let c=prompt("Clave:")
- if(c===claveCorrecta){
-  ajustes.style.right="0px"
-  renderEditor()
- } else alert("Clave incorrecta")
-}
-function cerrarAjustes(){ajustes.style.right="-420px"}
-
-function guardar(){
- if(tiendaInput.value) nombreTienda.innerText=tiendaInput.value
- if(wpInput.value) whatsappNumero=wpInput.value
-
- if(nuevaClave.value){
-  if(nuevaClave.value!==confirmarClave.value){alert("No coinciden");return}
-  claveCorrecta=nuevaClave.value
- }
-
- cerrarAjustes()
+// Login admin
+function loginAdmin(){
+  const numero = adminNumero.value.trim();
+  const pass = adminPass.value.trim();
+  if(numero===ADMIN_NUM && pass===ADMIN_PASS){
+    localStorage.setItem("usuario", JSON.stringify({ tipo:"admin", numero:ADMIN_NUM }));
+    iniciarTienda();
+  } else alert("Número o contraseña incorrectos");
 }
 
-render()
+// Iniciar tienda
+function iniciarTienda(){
+  login.classList.add("hidden");
+  tienda.classList.remove("hidden");
+  cargarProductos();
+  verificarAdmin();
+  mostrarPerfil();
+  mostrarHistorial();
+}
+
+// Productos
+function cargarProductos(){
+  productosDiv.innerHTML="";
+  productos.forEach(p=>{
+    productosDiv.innerHTML+=`
+    <div class="producto">
+      <img src="${p.img}">
+      <h4>${p.nombre}</h4>
+      <p>$${p.precio}</p>
+      <button onclick="agregar(${p.id})">Agregar</button>
+    </div>`;
+  });
+}
+
+function agregar(id){
+  const p = productos.find(x=>x.id===id);
+  carrito.push(p);
+  alert("Agregado");
+}
+
+// Carrito
+function abrirCarrito(){carritoPanel.style.display="block"; renderCarrito();}
+function cerrarCarrito(){carritoPanel.style.display="none";}
+function renderCarrito(){
+  listaCarrito.innerHTML="";
+  let total=0;
+  carrito.forEach((p,i)=>{
+    total+=p.precio;
+    listaCarrito.innerHTML+=`${p.nombre} - $${p.precio} <button onclick="quitar(${i})">❌</button><br>`;
+  });
+  totalCarrito.innerText = total.toFixed(2);
+}
+function quitar(i){ carrito.splice(i,1); renderCarrito(); }
+
+// Ajustes
+function guardarAjustes(){
+  ajustes.nombreTienda = nombreTiendaInput.value || ajustes.nombreTienda;
+  ajustes.whatsapp = whatsappInput.value || ajustes.whatsapp;
+  localStorage.setItem("ajustes", JSON.stringify(ajustes));
+  nombreTiendaHeader.innerText = ajustes.nombreTienda;
+  alert("Ajustes guardados ✅");
+}
+
+// Pedidos
+function enviarPedido(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const pedido = { id:Date.now(), fecha:new Date().toLocaleString(), cliente:usuario, productos:carrito, total:carrito.reduce((a,b)=>a+b.precio,0), estado:"Pendiente" };
+  let pedidos = JSON.parse(localStorage.getItem("pedidos"))||[];
+  pedidos.push(pedido);
+  localStorage.setItem("pedidos",JSON.stringify(pedidos));
+
+  let msg=`🧾 NUEVO PEDIDO%0AID: ${pedido.id}%0ACliente: ${usuario.nombre}%0ATotal: $${pedido.total}`;
+  window.open(`https://wa.me/${ajustes.whatsapp}?text=${msg}`);
+
+  carrito=[];
+  cerrarCarrito();
+  mostrarHistorial();
+}
+
+// Admin
+function abrirAdmin(){ adminPanel.classList.toggle("hidden"); renderPedidos(); }
+function verificarAdmin(){ const u = JSON.parse(localStorage.getItem("usuario")); if(u.tipo==="admin") btnAdmin.classList.remove("hidden"); }
+function renderPedidos(){
+  let pedidos = JSON.parse(localStorage.getItem("pedidos"))||[];
+  listaPedidos.innerHTML="";
+  pedidos.forEach(p=>{
+    let botones="";
+    if(p.estado==="Pendiente") botones=`<button onclick="estado(${p.id},'Aceptado')">Aceptar</button> <button onclick="cancelarPedido(${p.id})">Cancelar</button>`;
+    listaPedidos.innerHTML+=`
+      <div>
+        <b>#${p.id}</b> ${p.cliente.nombre} - $${p.total} <span class="estado">${p.estado}</span><br>
+        ${botones}
+      </div><hr>`;
+  });
+}
+function estado(id, nuevoEstado){
+  let pedidos = JSON.parse(localStorage.getItem("pedidos"));
+  let p = pedidos.find(x=>x.id===id);
+  p.estado = nuevoEstado;
+  localStorage.setItem("pedidos",JSON.stringify(pedidos));
+
+  let msg=`✅ PEDIDO ${nuevoEstado.toUpperCase()}%0AID: ${p.id}%0ATotal: $${p.total}`;
+  window.open(`https://wa.me/${p.cliente.telefono}?text=${msg}`);
+  renderPedidos();
+}
+function cancelarPedido(id){
+  let pedidos = JSON.parse(localStorage.getItem("pedidos"));
+  let p = pedidos.find(x=>x.id===id);
+  if(p.estado!=="Pendiente"){ alert("No se puede cancelar"); return; }
+  p.estado = "Cancelado";
+  localStorage.setItem("pedidos",JSON.stringify(pedidos));
+  alert("Pedido cancelado ✅");
+  renderPedidos();
+}
+
+// Perfil cliente editable
+function mostrarPerfil(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if(usuario.tipo!=="cliente") return;
+  perfilCliente.classList.remove("hidden");
+  perfilNombre.value = usuario.nombre;
+  perfilTelefono.value = usuario.telefono;
+}
+function guardarPerfil(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+  const cliente = clientes.find(c=>c.telefono===usuario.telefono);
+
+  if(cliente){
+    cliente.nombre = perfilNombre.value || cliente.nombre;
+    cliente.telefono = perfilTelefono.value || cliente.telefono;
+    if(perfilPassword.value) cliente.password = perfilPassword.value;
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+
+    usuario.nombre = cliente.nombre;
+    usuario.telefono = cliente.telefono;
+    localStorage.setItem("usuario", JSON.stringify(usuario));
+
+    alert("Perfil actualizado ✅");
+    mostrarHistorial();
+  }
+}
+
+// Historial cliente
+function mostrarHistorial(){
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if(usuario.tipo!=="cliente") return;
+  historialCliente.classList.remove("hidden");
+
+  const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  const misPedidos = pedidos.filter(p => p.cliente.telefono === usuario.telefono);
+
+  listaHistorial.innerHTML = "";
+  misPedidos.forEach(p => {
+    let btnCancelar = p.estado==="Pendiente"?`<button onclick="cancelarPedidoCliente(${p.id})">Cancelar</button>`:"";
+    let listaProductos="";
+    p.productos.forEach(prod=>{
+      listaProductos += `- ${prod.nombre} x${prod.cantidad} $${(prod.precio*prod.cantidad).toFixed(2)}<br>`;
+    });
+    listaHistorial.innerHTML += `
+      <div style="border:1px solid #ccc; margin:5px; padding:5px; border-radius:5px;">
+        <b>Pedido #${p.id}</b><br>
+        Fecha: ${p.fecha}<br>
+        Productos:<br>${listaProductos}
+        Total: $${p.total.toFixed(2)}<br>
+        Estado: <span class="estado">${p.estado}</span><br>
+        ${btnCancelar}
+      </div>`;
+  });
+}
+function cancelarPedidoCliente(id){
+  let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  const pedido = pedidos.find(p => p.id===id);
+  if(!pedido || pedido.estado !== "Pendiente"){ alert("No se puede cancelar"); return; }
+  pedido.estado="Cancelado";
+  localStorage.setItem("pedidos", JSON.stringify(pedidos));
+  alert("Pedido cancelado ✅");
+  mostrarHistorial();
+}
+
+// Filtrar categorías
+function filtrarCategoria(cat){
+  productosDiv.innerHTML="";
+  productos.filter(p=>cat==="todos"?true:p.categoria===cat).forEach(p=>{
+    productosDiv.innerHTML+=`
+    <div class="producto">
+      <img src="${p.img}">
+      <h4>${p.nombre}</h4>
+      <p>$${p.precio}</p>
+      <button onclick="agregar(${p.id})">Agregar</button>
+    </div>`;
+  });
+}
 </script>
-
 </body>
 </html>
