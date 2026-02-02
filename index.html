@@ -8,12 +8,12 @@
 body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
 .hidden { display:none; }
 header { background: #0a7cff; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-button { padding: 8px 12px; border:none; border-radius:5px; background:#0a7cff; color:white; margin:2px; }
+button { padding: 8px 12px; border:none; border-radius:5px; background:#0a7cff; color:white; margin:2px; cursor:pointer; }
 input, select { width:100%; padding:8px; margin:5px 0; }
 #productosDiv { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:10px; padding:10px; }
 .producto { background:white; border-radius:10px; padding:10px; text-align:center; }
 .producto img { width:100%; border-radius:10px; }
-#carritoPanel, #perfilCliente, #historialCliente { padding:10px; background:#fff; margin:10px; border-radius:10px; }
+#carritoPanel, #perfilCliente, #historialCliente, #adminPanel { padding:10px; background:#fff; margin:10px; border-radius:10px; }
 #menuCliente { position:fixed; bottom:0; left:0; right:0; background:#0a7cff; display:flex; justify-content:space-around; padding:10px; color:white; }
 .admin { background:#ffe0e0; padding:10px; }
 .estado { font-weight:bold; }
@@ -21,7 +21,7 @@ input, select { width:100%; padding:8px; margin:5px 0; }
 </head>
 <body>
 
-<!-- INICIO DE SESIÓN -->
+<!-- LOGIN -->
 <div id="login" style="text-align:center; padding:50px;">
   <h1 id="textoInicio">Bienvenido a Mini Tienda</h1>
   <p>Ingresa tus datos para continuar</p>
@@ -32,7 +32,7 @@ input, select { width:100%; padding:8px; margin:5px 0; }
   <button onclick="mostrarRegistro()">Crear nuevo usuario</button>
 </div>
 
-<!-- PANEL DE REGISTRO -->
+<!-- REGISTRO -->
 <div id="registroPanel" class="hidden" style="text-align:center; padding:20px;">
   <h3>Registro de nuevo cliente</h3>
   <input id="regNombre" placeholder="Nombre">
@@ -50,6 +50,16 @@ input, select { width:100%; padding:8px; margin:5px 0; }
     <button id="btnAdmin" class="hidden" onclick="abrirAdmin()">⚙️ Ajustes</button>
   </div>
 </header>
+
+<!-- FILTRO GRUPOS -->
+<div style="padding:10px;">
+  <select id="filtroGrupo" onchange="filtrarProductos()">
+    <option value="todos">Todos</option>
+    <option value="cafe">Café</option>
+    <option value="pan">Pan</option>
+    <option value="bebida">Bebida</option>
+  </select>
+</div>
 
 <!-- Productos -->
 <div id="productosDiv"></div>
@@ -101,9 +111,21 @@ input, select { width:100%; padding:8px; margin:5px 0; }
 
   <h3>Productos</h3>
   <div id="adminProductos"></div>
+
+  <h3>Agregar nuevo producto</h3>
+  <input id="nuevoNombre" placeholder="Nombre producto">
+  <input id="nuevoPrecio" placeholder="Precio">
+  <input id="nuevoImg" placeholder="URL imagen">
+  <select id="nuevoGrupo">
+    <option value="cafe">Café</option>
+    <option value="pan">Pan</option>
+    <option value="bebida">Bebida</option>
+  </select>
+  <button onclick="agregarNuevoProducto()">Agregar producto</button>
 </div>
 
 <script>
+// --- DATOS INICIALES ---
 const ADMIN_NUM = "56666168";
 const ADMIN_PASS = "0012";
 let ajustes = JSON.parse(localStorage.getItem("ajustes")) || {
@@ -120,14 +142,20 @@ let productos = JSON.parse(localStorage.getItem("productos")) || [
 ];
 let carrito = [];
 
-// LOGIN
+// --- MANTENER SESIÓN ---
+window.onload = function() {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if(usuario){ iniciarTienda(); }
+  else{ login.classList.remove("hidden"); }
+}
+
+// --- LOGIN ---
 function loginUsuario(){
   const tel = document.getElementById("loginTelefono").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
   if(tel===ADMIN_NUM && pass===ADMIN_PASS){
     localStorage.setItem("usuario", JSON.stringify({tipo:"admin", telefono:tel}));
-    iniciarTienda();
-    return;
+    iniciarTienda(); return;
   }
   let cliente = clientes.find(c=>c.telefono===tel && c.password===pass);
   if(!cliente){ alert("Usuario o contraseña incorrectos"); return; }
@@ -135,7 +163,7 @@ function loginUsuario(){
   iniciarTienda();
 }
 
-// REGISTRO
+// --- REGISTRO ---
 function mostrarRegistro(){ registroPanel.classList.remove("hidden"); login.classList.add("hidden"); }
 function cerrarRegistro(){ registroPanel.classList.add("hidden"); login.classList.remove("hidden"); }
 function registrarCliente(){
@@ -150,7 +178,7 @@ function registrarCliente(){
   cerrarRegistro();
 }
 
-// INICIAR TIENDA
+// --- INICIAR TIENDA ---
 function iniciarTienda(){
   login.classList.add("hidden"); registroPanel.classList.add("hidden"); tienda.classList.remove("hidden");
   document.body.style.background = ajustes.fondoInicio || "#f5f5f5";
@@ -164,18 +192,18 @@ function iniciarTienda(){
   if(usuario.tipo==="cliente"){ menuCliente.classList.remove("hidden"); mostrarPerfil(); mostrarHistorial(); }
 }
 
-// NAVEGACIÓN SECCIONES
+// --- NAVEGACIÓN ---
 function mostrarSeccion(seccion){
   sessionStorage.setItem("seccionActual",seccion);
   productosDiv.classList.add("hidden"); carritoPanel.classList.add("hidden");
   perfilCliente.classList.add("hidden"); historialCliente.classList.add("hidden");
-  if(seccion==="productos") productosDiv.classList.remove("hidden");
+  if(seccion==="productos") filtrarProductos();
   if(seccion==="carrito") carritoPanel.classList.remove("hidden");
   if(seccion==="perfil") perfilCliente.classList.remove("hidden");
   if(seccion==="historial") historialCliente.classList.remove("hidden");
 }
 
-// PERFIL CLIENTE
+// --- PERFIL CLIENTE ---
 function mostrarPerfil(){
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   if(usuario.tipo!=="cliente") return;
@@ -192,12 +220,11 @@ function guardarPerfil(){
     localStorage.setItem("clientes",JSON.stringify(clientes));
     usuario.nombre = cliente.nombre; usuario.telefono = cliente.telefono;
     localStorage.setItem("usuario",JSON.stringify(usuario));
-    alert("Perfil actualizado ✅");
-    mostrarHistorial();
+    alert("Perfil actualizado ✅"); mostrarHistorial();
   }
 }
 
-// HISTORIAL
+// --- HISTORIAL ---
 function mostrarHistorial(){
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   if(usuario.tipo!=="cliente") return;
@@ -218,10 +245,15 @@ function cancelarPedidoCliente(id){
   p.estado="Cancelado"; localStorage.setItem("pedidos",JSON.stringify(pedidos)); alert("Pedido cancelado ✅"); mostrarHistorial();
 }
 
-// PRODUCTOS
+// --- PRODUCTOS ---
 function cargarProductos(){
-  productosDiv.innerHTML="";
-  productos.forEach(p=>{
+  filtrarProductos();
+}
+function filtrarProductos(){
+  const grupo = document.getElementById("filtroGrupo").value;
+  productosDiv.innerHTML = "";
+  let filtrados = grupo==="todos"?productos:productos.filter(p=>p.categoria===grupo);
+  filtrados.forEach(p=>{
     productosDiv.innerHTML+=`
     <div class="producto">
       <img src="${p.img}">
@@ -232,27 +264,27 @@ function cargarProductos(){
   });
 }
 function agregarCarrito(id){
-  const p = productos.find(x=>x.id===id); carrito.push(p); alert("Agregado ✅"); renderCarrito();
+  const p = productos.find(x=>x.id===id); carrito.push({...p}); renderCarrito();
 }
 
-// CARRITO
+// --- CARRITO ---
 function renderCarrito(){
   listaCarrito.innerHTML="";
   let total=0;
-  carrito.forEach((p,i)=>{ total+=p.precio; listaCarrito.innerHTML+=`${p.nombre} - $${p.precio} <button onclick="quitarCarrito(${i})">❌</button><br>` });
+  carrito.forEach((p,i)=>{ total+=p.precio*p.cantidad; listaCarrito.innerHTML+=`${p.nombre} x${p.cantidad} - $${(p.precio*p.cantidad).toFixed(2)} <button onclick="quitarCarrito(${i})">❌</button><br>` });
   totalCarrito.innerText = total.toFixed(2);
 }
 function quitarCarrito(i){ carrito.splice(i,1); renderCarrito(); }
 function enviarPedido(){
   const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const pedido = {id:Date.now(), fecha:new Date().toLocaleString(), cliente:usuario, productos:carrito, total:carrito.reduce((a,b)=>a+b.precio,0), estado:"Pendiente"};
+  const pedido = {id:Date.now(), fecha:new Date().toLocaleString(), cliente:usuario, productos:carrito, total:carrito.reduce((a,b)=>a+b.precio*b.cantidad,0), estado:"Pendiente"};
   let pedidos = JSON.parse(localStorage.getItem("pedidos"))||[]; pedidos.push(pedido); localStorage.setItem("pedidos",JSON.stringify(pedidos));
   let msg=`🧾 NUEVO PEDIDO%0AID:${pedido.id}%0ACliente:${usuario.nombre}%0ATotal:$${pedido.total}`;
   window.open(`https://wa.me/${ajustes.whatsapp}?text=${msg}`);
   carrito=[]; renderCarrito(); mostrarSeccion("productos"); mostrarHistorial();
 }
 
-// ADMIN
+// --- ADMIN ---
 function abrirAdmin(){ adminPanel.classList.toggle("hidden"); renderAdminProductos(); }
 function guardarAjustes(){
   ajustes.nombreTienda = nombreTiendaInput.value || ajustes.nombreTienda;
@@ -264,9 +296,10 @@ function guardarAjustes(){
   document.getElementById("textoInicio").innerText = ajustes.textoInicio;
   document.body.style.background = ajustes.fondoInicio || "#f5f5f5";
   alert("Ajustes guardados ✅");
-  cargarProductos();
-  renderAdminProductos();
+  filtrarProductos(); renderAdminProductos();
 }
+
+// --- ADMIN PRODUCTOS ---
 function renderAdminProductos(){
   adminProductos.innerHTML="";
   productos.forEach((p,i)=> adminProductos.innerHTML+=`
@@ -274,16 +307,37 @@ function renderAdminProductos(){
       <input value="${p.nombre}" placeholder="Nombre" id="prodNombre${i}">
       <input value="${p.precio}" placeholder="Precio" id="prodPrecio${i}">
       <input value="${p.img}" placeholder="URL Imagen" id="prodImg${i}">
+      <select id="prodGrupo${i}">
+        <option value="cafe" ${p.categoria==="cafe"?"selected":""}>Café</option>
+        <option value="pan" ${p.categoria==="pan"?"selected":""}>Pan</option>
+        <option value="bebida" ${p.categoria==="bebida"?"selected":""}>Bebida</option>
+      </select>
       <button onclick="guardarProducto(${i})">Guardar</button>
+      <button onclick="eliminarProducto(${i})">Eliminar</button>
     </div>`);
 }
 function guardarProducto(i){
   productos[i].nombre = document.getElementById(`prodNombre${i}`).value;
   productos[i].precio = parseFloat(document.getElementById(`prodPrecio${i}`).value);
   productos[i].img = document.getElementById(`prodImg${i}`).value;
+  productos[i].categoria = document.getElementById(`prodGrupo${i}`).value;
   localStorage.setItem("productos",JSON.stringify(productos));
   alert("Producto actualizado ✅");
-  cargarProductos(); renderAdminProductos();
+  filtrarProductos(); renderAdminProductos();
+}
+function eliminarProducto(i){
+  if(confirm("¿Eliminar producto?")){ productos.splice(i,1); localStorage.setItem("productos",JSON.stringify(productos)); filtrarProductos(); renderAdminProductos(); }
+}
+function agregarNuevoProducto(){
+  const nombre = document.getElementById("nuevoNombre").value.trim();
+  const precio = parseFloat(document.getElementById("nuevoPrecio").value);
+  const img = document.getElementById("nuevoImg").value.trim();
+  const grupo = document.getElementById("nuevoGrupo").value;
+  if(!nombre || !precio || !img){ alert("Completa todos los campos"); return; }
+  productos.push({id:Date.now(), nombre, precio, img, categoria:grupo, cantidad:1});
+  localStorage.setItem("productos",JSON.stringify(productos));
+  alert("Producto agregado ✅");
+  renderAdminProductos(); filtrarProductos();
 }
 </script>
 </body>
