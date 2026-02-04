@@ -3,434 +3,671 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Funcional</title>
+    <title>Mini Shein - Tienda Online</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
+        :root {
+            --primary: #ff3e6c;
+            --secondary: #146eb4;
+            --dark: #1a1a1a;
+            --light: #f5f5f5;
+            --gray: #666;
         }
         
-        .hidden {
-            display: none;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        .hidden { display: none !important; }
         
         /* LOGIN */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
         .login-box {
-            max-width: 400px;
-            margin: 50px auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
         
         .login-box h1 {
             text-align: center;
             margin-bottom: 30px;
+            color: var(--primary);
         }
         
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+        .form-group {
+            margin-bottom: 20px;
         }
         
-        button {
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background: #007bff;
-            color: white;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 14px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #e0315d;
+            transform: translateY(-2px);
         }
         
         .link {
             text-align: center;
             margin-top: 20px;
-            color: #007bff;
+            color: var(--secondary);
             cursor: pointer;
         }
         
-        /* TIENDA */
+        /* HEADER */
         .header {
             background: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         
-        .tabs {
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* NAVEGACIÓN */
+        .nav-tabs {
             display: flex;
             gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            overflow-x: auto;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* PRODUCTOS */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        /* CARRITO */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+        }
+        
+        .cart-sidebar.active {
+            transform: translateX(0);
+        }
+        
+        .cart-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background: #f9f9f9;
+        }
+        
+        /* PANEL ADMIN */
+        .admin-panel {
+            padding: 20px;
+        }
+        
+        .admin-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
             margin-bottom: 20px;
         }
         
-        .tab-btn {
-            padding: 10px 20px;
-            background: white;
-            border: none;
-            border-radius: 5px;
+        .image-upload {
+            border: 2px dashed #ddd;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
             cursor: pointer;
-        }
-        
-        .tab-btn.active {
-            background: #007bff;
-            color: white;
-        }
-        
-        .content {
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            min-height: 300px;
-        }
-        
-        .producto {
-            background: #f8f9fa;
-            padding: 15px;
             margin: 10px 0;
-            border-radius: 5px;
+        }
+        
+        .image-upload:hover {
+            border-color: var(--primary);
+        }
+        
+        /* AJUSTES */
+        .settings-grid {
+            display: grid;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .setting-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* NOTIFICACIONES */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 2000;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .cart-sidebar {
+                max-width: 100%;
+            }
+            
+            .nav-tabs {
+                padding: 10px;
+            }
+            
+            .nav-tab {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="login">
+<div id="loginScreen" class="login-screen">
     <div class="login-box">
-        <h1>Tienda Online</h1>
-        <input type="text" id="usuario" placeholder="Usuario">
-        <input type="password" id="password" placeholder="Contraseña">
-        <button onclick="hacerLogin()">Entrar</button>
-        <div class="link" onclick="mostrarRegistro()">Crear cuenta nueva</div>
+        <h1>🛍️ Mini Shein</h1>
+        <div class="form-group">
+            <label>Usuario</label>
+            <input type="text" id="inputUser" class="form-control" placeholder="admin">
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="inputPass" class="form-control" placeholder="0012">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Iniciar Sesión</button>
+        <div class="link" onclick="showRegister()">Crear cuenta de cliente</div>
     </div>
 </div>
 
 <!-- REGISTRO -->
-<div id="registro" class="hidden">
+<div id="registerScreen" class="login-screen hidden">
     <div class="login-box">
         <h1>Crear Cuenta</h1>
-        <input type="text" id="nuevoNombre" placeholder="Nombre">
-        <input type="text" id="nuevoUsuario" placeholder="Usuario">
-        <input type="password" id="nuevaPassword" placeholder="Contraseña">
-        <button onclick="crearCuenta()">Crear Cuenta</button>
-        <div class="link" onclick="mostrarLogin()">Volver al login</div>
+        <div class="form-group">
+            <label>Nombre completo</label>
+            <input type="text" id="regName" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input type="tel" id="regPhone" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="regPassword" class="form-control">
+        </div>
+        <button class="btn btn-primary" onclick="register()">Crear Cuenta</button>
+        <div class="link" onclick="showLogin()">← Volver al login</div>
     </div>
 </div>
 
-<!-- TIENDA -->
-<div id="tienda" class="hidden">
+<!-- TIENDA PRINCIPAL -->
+<div id="mainApp" class="hidden">
     <!-- HEADER -->
-    <div class="header">
-        <h2>Mi Tienda</h2>
-        <div>
-            <span id="saludo">Usuario</span>
-            <button onclick="cerrarSesion()" style="width: auto; margin-left: 10px;">Salir</button>
+    <header class="header">
+        <div class="logo" id="storeName">Mini Shein</div>
+        <div class="user-info">
+            <span id="userGreeting"></span>
+            <button class="btn btn-primary" onclick="openCart()" style="width: auto; padding: 8px 15px;">
+                🛒 Carrito (<span id="cartCount">0</span>)
+            </button>
+            <button class="btn" onclick="logout()" style="width: auto; padding: 8px 15px; background: #f0f0f0;">
+                Salir
+            </button>
         </div>
-    </div>
-    
-    <!-- TABS -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="mostrarSeccion('productos')">Productos</button>
-        <button class="tab-btn" onclick="mostrarSeccion('carrito')">Carrito</button>
-        <button class="tab-btn" onclick="mostrarSeccion('perfil')">Perfil</button>
-        <button class="tab-btn" onclick="mostrarSeccion('ajustes')">Ajustes</button>
-    </div>
-    
-    <!-- CONTENIDO -->
-    <div class="content">
+    </header>
+
+    <!-- NAVEGACIÓN -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('products')">🛍️ Productos</button>
+        <button class="nav-tab" onclick="showSection('profile')">👤 Perfil</button>
+        <button class="nav-tab" onclick="showSection('orders')">📋 Pedidos</button>
+        <button class="nav-tab" onclick="showSection('settings')">⚙️ Ajustes</button>
+        <button id="adminTab" class="nav-tab hidden" onclick="showSection('admin')">🔧 Admin</button>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
         <!-- PRODUCTOS -->
-        <div id="seccion-productos">
-            <h3>Productos</h3>
-            <div class="producto">
-                <h4>Café Americano</h4>
-                <p>Precio: $2.50</p>
-                <button onclick="agregarAlCarrito('Café Americano', 2.50)">Agregar</button>
-            </div>
-            <div class="producto">
-                <h4>Capuccino</h4>
-                <p>Precio: $3.00</p>
-                <button onclick="agregarAlCarrito('Capuccino', 3.00)">Agregar</button>
-            </div>
-        </div>
-        
-        <!-- CARRITO -->
-        <div id="seccion-carrito" class="hidden">
-            <h3>Carrito</h3>
-            <div id="carrito-items">
-                <p>Carrito vacío</p>
-            </div>
-            <div style="margin-top: 20px;">
-                <h4>Total: $<span id="total">0</span></h4>
-                <button onclick="hacerPedido()">Comprar</button>
-            </div>
-        </div>
-        
+        <section id="sectionProducts">
+            <div class="products-grid" id="productsGrid"></div>
+        </section>
+
         <!-- PERFIL -->
-        <div id="seccion-perfil" class="hidden">
-            <h3>Mi Perfil</h3>
-            <input type="text" id="editNombre" placeholder="Nombre">
-            <input type="password" id="editPassword" placeholder="Nueva contraseña">
-            <button onclick="actualizarPerfil()">Guardar</button>
-        </div>
-        
+        <section id="sectionProfile" class="hidden">
+            <div class="settings-grid">
+                <div class="setting-card">
+                    <h3>👤 Mi Perfil</h3>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="profileName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="profilePhone" class="form-control">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveProfile()">Guardar Cambios</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PEDIDOS -->
+        <section id="sectionOrders" class="hidden">
+            <div class="settings-grid">
+                <div class="setting-card">
+                    <h3>📋 Mis Pedidos</h3>
+                    <div id="ordersList"></div>
+                </div>
+            </div>
+        </section>
+
         <!-- AJUSTES -->
-        <div id="seccion-ajustes" class="hidden">
-            <h3>Ajustes</h3>
-            <input type="text" id="tiendaNombre" placeholder="Nombre tienda">
-            <button onclick="guardarAjustes()">Guardar</button>
+        <section id="sectionSettings" class="hidden">
+            <div class="settings-grid">
+                <div class="setting-card">
+                    <h3>🎨 Personalización</h3>
+                    <div class="form-group">
+                        <label>Fondo de inicio (URL de imagen)</label>
+                        <input type="text" id="bgImage" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label>Color principal</label>
+                        <input type="color" id="primaryColor" class="form-control" value="#ff3e6c">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings()">Guardar Ajustes</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN -->
+        <section id="sectionAdmin" class="hidden">
+            <div class="admin-panel">
+                <div class="admin-section">
+                    <h3>➕ Agregar Nuevo Producto</h3>
+                    <div class="form-group">
+                        <label>Nombre del producto</label>
+                        <input type="text" id="newProductName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio ($)</label>
+                        <input type="number" id="newProductPrice" class="form-control" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>URL de la imagen</label>
+                        <input type="text" id="newProductImage" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="newProductCategory" class="form-control">
+                            <option value="ropa">👕 Ropa</option>
+                            <option value="zapatos">👟 Zapatos</option>
+                            <option value="accesorios">💍 Accesorios</option>
+                            <option value="electronica">📱 Electrónica</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="addProduct()">Agregar Producto</button>
+                </div>
+
+                <div class="admin-section">
+                    <h3>📦 Gestión de Productos</h3>
+                    <div id="productsListAdmin"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CARRITO SIDEBAR -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>🛒 Mi Carrito</h3>
+            <button class="btn" onclick="closeCart()" style="width: auto; background: #f0f0f0;">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items del carrito -->
+        </div>
+        <div class="cart-footer">
+            <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 20px;">
+                <span>Total:</span>
+                <span>$<span id="cartTotal">0.00</span></span>
+            </div>
+            <button class="btn btn-primary" onclick="checkout()" style="margin-bottom: 10px;">
+                💳 Comprar Ahora
+            </button>
+            <button class="btn" onclick="closeCart()" style="background: #f0f0f0;">
+                Seguir Comprando
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-// ===================================
-// VARIABLES
-// ===================================
-let usuarioActual = null;
-let carrito = [];
+// ============================================
+// SISTEMA COMPLETO - Mini Shein
+// ============================================
 
-// ===================================
-// FUNCIONES DE PANTALLA
-// ===================================
-function mostrarLogin() {
-    document.getElementById('registro').classList.add('hidden');
-    document.getElementById('login').classList.remove('hidden');
+// DATOS INICIALES
+let currentUser = null;
+let cart = [];
+let products = [];
+let orders = [];
+let settings = {};
+let users = [];
+
+// INICIALIZAR
+function init() {
+    loadFromStorage();
+    checkLogin();
 }
 
-function mostrarRegistro() {
-    document.getElementById('login').classList.add('hidden');
-    document.getElementById('registro').classList.remove('hidden');
+// CARGAR DATOS DEL LOCALSTORAGE
+function loadFromStorage() {
+    // Usuarios por defecto
+    users = [
+        { id: 1, name: "Administrador", phone: "admin", password: "0012", type: "admin" }
+    ];
+    
+    // Productos por defecto
+    products = [
+        { 
+            id: 1, 
+            name: "Camiseta Casual", 
+            price: 19.99, 
+            image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
+            category: "ropa",
+            stock: 10
+        },
+        { 
+            id: 2, 
+            name: "Zapatos Deportivos", 
+            price: 49.99, 
+            image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
+            category: "zapatos",
+            stock: 5
+        }
+    ];
+    
+    // Cargar datos guardados
+    const savedData = localStorage.getItem('miniSheinData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        if (data.users) users = data.users;
+        if (data.products) products = data.products;
+        if (data.orders) orders = data.orders;
+        if (data.settings) settings = data.settings;
+        if (data.cart) cart = data.cart;
+    }
+    
+    // Cargar usuario si existe
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+    }
 }
 
-// ===================================
+// GUARDAR DATOS
+function saveToStorage() {
+    const data = {
+        users: users,
+        products: products,
+        orders: orders,
+        settings: settings,
+        cart: cart
+    };
+    localStorage.setItem('miniSheinData', JSON.stringify(data));
+    if (currentUser) {
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    }
+}
+
+// VERIFICAR LOGIN
+function checkLogin() {
+    if (currentUser) {
+        showMainApp();
+    }
+}
+
 // LOGIN
-// ===================================
-function hacerLogin() {
-    const user = document.getElementById('usuario').value;
-    const pass = document.getElementById('password').value;
+function login() {
+    const username = document.getElementById('inputUser').value.trim();
+    const password = document.getElementById('inputPass').value.trim();
     
-    // ADMIN por defecto
-    if (user === "admin" && pass === "0012") {
-        usuarioActual = {
-            nombre: "Administrador",
-            tipo: "admin"
-        };
-        iniciarTienda();
-        return;
-    }
+    // Buscar usuario
+    const user = users.find(u => 
+        (u.phone === username || u.name === username) && u.password === password
+    );
     
-    // Cualquier otro usuario
-    if (user && pass) {
-        usuarioActual = {
-            nombre: user,
-            tipo: "cliente"
-        };
-        iniciarTienda();
+    if (user) {
+        currentUser = user;
+        saveToStorage();
+        showMainApp();
+        showNotification(`¡Bienvenido ${user.name}!`);
     } else {
-        alert("Ingresa usuario y contraseña");
+        alert("Usuario o contraseña incorrectos");
     }
 }
 
-function crearCuenta() {
-    const nombre = document.getElementById('nuevoNombre').value;
-    const user = document.getElementById('nuevoUsuario').value;
-    const pass = document.getElementById('nuevaPassword').value;
+// REGISTRO
+function register() {
+    const name = document.getElementById('regName').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
     
-    if (nombre && user && pass) {
-        usuarioActual = {
-            nombre: nombre,
-            tipo: "cliente"
-        };
-        iniciarTienda();
-    } else {
+    if (!name || !phone || !password) {
         alert("Completa todos los campos");
-    }
-}
-
-// ===================================
-// TIENDA
-// ===================================
-function iniciarTienda() {
-    console.log("Iniciando tienda para:", usuarioActual.nombre);
-    
-    // Ocultar login/registro
-    document.getElementById('login').classList.add('hidden');
-    document.getElementById('registro').classList.add('hidden');
-    
-    // Mostrar tienda
-    document.getElementById('tienda').classList.remove('hidden');
-    
-    // Mostrar saludo
-    document.getElementById('saludo').textContent = "Hola, " + usuarioActual.nombre;
-    
-    // Cargar perfil
-    document.getElementById('editNombre').value = usuarioActual.nombre;
-}
-
-function cerrarSesion() {
-    if (confirm("¿Cerrar sesión?")) {
-        usuarioActual = null;
-        carrito = [];
-        document.getElementById('tienda').classList.add('hidden');
-        document.getElementById('login').classList.remove('hidden');
-        document.getElementById('usuario').value = "";
-        document.getElementById('password').value = "";
-    }
-}
-
-// ===================================
-// NAVEGACIÓN
-// ===================================
-function mostrarSeccion(seccion) {
-    console.log("Mostrando sección:", seccion);
-    
-    // Ocultar todas
-    document.getElementById('seccion-productos').classList.add('hidden');
-    document.getElementById('seccion-carrito').classList.add('hidden');
-    document.getElementById('seccion-perfil').classList.add('hidden');
-    document.getElementById('seccion-ajustes').classList.add('hidden');
-    
-    // Remover activo
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Mostrar sección
-    document.getElementById('seccion-' + seccion).classList.remove('hidden');
-    
-    // Marcar botón activo
-    event.target.classList.add('active');
-    
-    // Si es carrito, actualizar
-    if (seccion === 'carrito') {
-        actualizarCarrito();
-    }
-}
-
-// ===================================
-// CARRITO
-// ===================================
-function agregarAlCarrito(nombre, precio) {
-    carrito.push({
-        nombre: nombre,
-        precio: precio,
-        cantidad: 1
-    });
-    
-    alert("✅ " + nombre + " agregado al carrito");
-    
-    // Si estamos en carrito, actualizar
-    if (!document.getElementById('seccion-carrito').classList.contains('hidden')) {
-        actualizarCarrito();
-    }
-}
-
-function actualizarCarrito() {
-    const container = document.getElementById('carrito-items');
-    const totalSpan = document.getElementById('total');
-    
-    if (carrito.length === 0) {
-        container.innerHTML = '<p>Carrito vacío</p>';
-        totalSpan.textContent = "0";
         return;
     }
     
-    let total = 0;
-    container.innerHTML = '';
-    
-    carrito.forEach((item, index) => {
-        const subtotal = item.precio * item.cantidad;
-        total += subtotal;
-        
-        const div = document.createElement('div');
-        div.className = 'producto';
-        div.innerHTML = `
-            <div style="display: flex; justify-content: space-between;">
-                <div>
-                    <strong>${item.nombre}</strong><br>
-                    $${item.precio} x ${item.cantidad}
-                </div>
-                <button onclick="eliminarDelCarrito(${index})" style="background: red; width: auto;">Eliminar</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-    
-    totalSpan.textContent = total.toFixed(2);
-}
-
-function eliminarDelCarrito(index) {
-    carrito.splice(index, 1);
-    actualizarCarrito();
-}
-
-function hacerPedido() {
-    if (carrito.length === 0) {
-        alert("El carrito está vacío");
+    if (users.some(u => u.phone === phone)) {
+        alert("Este teléfono ya está registrado");
         return;
     }
     
-    let total = 0;
-    let mensaje = "Resumen del pedido:\n\n";
+    const newUser = {
+        id: Date.now(),
+        name: name,
+        phone: phone,
+        password: password,
+        type: "client"
+    };
     
-    carrito.forEach(item => {
-        const subtotal = item.precio * item.cantidad;
-        total += subtotal;
-        mensaje += `${item.nombre} x${item.cantidad} - $${subtotal.toFixed(2)}\n`;
-    });
-    
-    mensaje += `\nTotal: $${total.toFixed(2)}`;
-    mensaje += `\nCliente: ${usuarioActual.nombre}`;
-    
-    alert("✅ Pedido realizado!\n\n" + mensaje);
-    
-    // Limpiar carrito
-    carrito = [];
-    actualizarCarrito();
+    users.push(newUser);
+    currentUser = newUser;
+    saveToStorage();
+    showMainApp();
+    showNotification("¡Cuenta creada con éxito!");
 }
 
-// ===================================
-// PERFIL
-// ===================================
-function actualizarPerfil() {
-    const nuevoNombre = document.getElementById('editNombre').value;
+// MOSTRAR APLICACIÓN PRINCIPAL
+function showMainApp() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('registerScreen').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
     
-    if (nuevoNombre) {
-        usuarioActual.nombre = nuevoNombre;
-        document.getElementById('saludo').textContent = "Hola, " + usuarioActual.nombre;
-        alert("✅ Perfil actualizado");
+    // Actualizar interfaz
+    document.getElementById('userGreeting').textContent = `Hola, ${currentUser.name}`;
+    document.getElementById('storeName').textContent = settings.storeName || "Mini Shein";
+    
+    // Mostrar/ocultar admin
+    if (currentUser.type === "admin") {
+        document.getElementById('adminTab').classList.remove('hidden');
     }
-}
-
-// ===================================
-// AJUSTES
-// ===================================
-function guardarAjustes() {
-    const nuevoNombre = document.getElementById('tiendaNombre').value;
     
-    if (nuevoNombre) {
-        document.querySelector('.header h2').textContent = nuevoNombre;
-        alert("✅ Ajustes guardados");
-    }
+    // Aplicar configuraciones
+    applySettings();
+    
+    // Cargar productos
+    loadProducts();
+    updateCartCount();
 }
 
-// ===================================
-// INICIO
-// ===================================
-// Cuando se carga la página
-window.onload = function() {
-    console.log("✅ Página cargada correctamente");
-    // Todo listo para usar
-};
-</script>
-</body>
-</html>
+// APLICAR CONFIGURACIONES
+function applySettings() {
+    if (settings.bgImage) {
+        document.body.style.backgroundImage = `url('
