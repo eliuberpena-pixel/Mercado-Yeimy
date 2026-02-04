@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Online</title>
+    <title>Tienda Online Simple</title>
     <style>
         * {
             margin: 0;
@@ -11,627 +11,556 @@
             box-sizing: border-box;
             font-family: Arial, sans-serif;
         }
-
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #f5f5f5;
             padding: 20px;
         }
-
+        
         .hidden {
             display: none !important;
         }
-
+        
         .card {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        .card-header h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .card-content {
             padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 50px auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-            border: 2px solid #e0e0e0;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .divider {
+        
+        h2 {
             text-align: center;
-            margin: 25px 0;
-            position: relative;
+            margin-bottom: 30px;
+            color: #333;
         }
-
-        .divider::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e0e0e0;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 15px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        /* TIENDA */
-        #tienda {
+        
+        input {
             width: 100%;
-            max-width: 1200px;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            display: none;
-            flex-direction: column;
-            height: 90vh;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #007bff;
             color: white;
-            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .error {
+            color: red;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .link {
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            cursor: pointer;
+        }
+        
+        /* TIENDA */
+        .header {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
-        .header h2 {
-            font-size: 20px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-sm {
-            padding: 8px 15px;
-            font-size: 14px;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 250px;
-            background: #f8f9fa;
-            border-right: 1px solid #e0e0e0;
-            padding: 20px;
-        }
-
-        .content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .nav-list {
-            list-style: none;
-        }
-
-        .nav-item {
-            margin-bottom: 10px;
-        }
-
-        .nav-link {
-            display: block;
-            padding: 12px 15px;
-            color: #333;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        /* PRODUCTOS */
-        .products-grid {
+        
+        .productos {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
-            margin-top: 20px;
+            margin-bottom: 80px;
         }
-
-        .product-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .product-info {
+        
+        .producto {
+            background: white;
             padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
-        .product-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .product-price {
-            color: #667eea;
-            font-size: 18px;
-            font-weight: 700;
+        
+        .producto img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
             margin-bottom: 10px;
         }
-
-        /* CARRITO */
-        .cart-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .cart-item-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-right: 15px;
-        }
-
-        .cart-item-info {
-            flex: 1;
-        }
-
-        .cart-item-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .cart-item-controls button {
-            padding: 5px 10px;
-            border: none;
-            background: #667eea;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* MODAL */
-        .modal {
+        
+        /* MENÚ INFERIOR */
+        .menu {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal-content {
             background: white;
-            border-radius: 10px;
-            padding: 30px;
-            width: 100%;
-            max-width: 500px;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
-
-        /* ADMIN */
-        .admin-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .product-form {
-            display: grid;
-            gap: 15px;
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .product-form input,
-        .product-form select {
+        
+        .menu-item {
+            text-align: center;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            cursor: pointer;
         }
-
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #e0e0e0;
-            }
-            
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            #tienda {
-                height: auto;
-                min-height: 100vh;
-            }
+        
+        .menu-item.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        /* SECCIONES */
+        .seccion {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 80px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .carrito-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
         }
     </style>
 </head>
 <body>
     <!-- PANTALLA LOGIN -->
-    <div id="loginScreen" class="card">
-        <div class="card-header">
-            <h1>Tienda Online</h1>
-            <p>Bienvenido de nuevo</p>
-        </div>
-        <div class="card-content">
-            <div class="form-group">
-                <label>Teléfono</label>
-                <input type="tel" id="loginTelefono" class="form-control" placeholder="Ingresa tu teléfono" value="56666168">
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="Ingresa tu contraseña" value="0012">
-            </div>
-            <div class="error-message" id="loginError"></div>
-            <button class="btn btn-primary" onclick="login()">Iniciar Sesión</button>
-            
-            <div class="divider">
-                <span>¿No tienes cuenta?</span>
-            </div>
-            
-            <button class="btn btn-secondary" onclick="showRegister()">Crear Nueva Cuenta</button>
-        </div>
+    <div id="login" class="card">
+        <h2>Iniciar Sesión</h2>
+        <input type="text" id="loginUser" placeholder="Teléfono o usuario">
+        <input type="password" id="loginPass" placeholder="Contraseña">
+        <div id="loginError" class="error hidden"></div>
+        <button onclick="hacerLogin()">Entrar</button>
+        <div class="link" onclick="mostrarRegistro()">Crear nueva cuenta</div>
     </div>
-
+    
     <!-- PANTALLA REGISTRO -->
-    <div id="registerScreen" class="card hidden">
-        <div class="card-header">
-            <h1>Crear Cuenta</h1>
-            <p>Regístrate para comenzar</p>
-        </div>
-        <div class="card-content">
-            <div class="form-group">
-                <label>Nombre Completo</label>
-                <input type="text" id="registerNombre" class="form-control" placeholder="Tu nombre completo">
-            </div>
-            <div class="form-group">
-                <label>Teléfono</label>
-                <input type="tel" id="registerTelefono" class="form-control" placeholder="Tu número de teléfono">
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="registerPassword" class="form-control" placeholder="Crea una contraseña">
-            </div>
-            <div class="form-group">
-                <label>Confirmar Contraseña</label>
-                <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Repite la contraseña">
-            </div>
-            <div class="error-message" id="registerError"></div>
-            <button class="btn btn-primary" onclick="register()">Crear Cuenta</button>
-            
-            <div class="divider">
-                <span>¿Ya tienes cuenta?</span>
-            </div>
-            
-            <button class="btn btn-secondary" onclick="showLogin()">Volver al Login</button>
-        </div>
+    <div id="registro" class="card hidden">
+        <h2>Crear Cuenta</h2>
+        <input type="text" id="regNombre" placeholder="Nombre completo">
+        <input type="text" id="regUser" placeholder="Teléfono">
+        <input type="password" id="regPass" placeholder="Contraseña">
+        <input type="password" id="regPass2" placeholder="Confirmar contraseña">
+        <div id="regError" class="error hidden"></div>
+        <button onclick="hacerRegistro()">Crear cuenta</button>
+        <div class="link" onclick="mostrarLogin()">Volver al login</div>
     </div>
-
+    
     <!-- TIENDA -->
-    <div id="tienda">
+    <div id="tienda" class="hidden">
         <!-- HEADER -->
         <div class="header">
-            <h2 id="tiendaNombre">Mini Tienda</h2>
-            <div class="header-actions">
-                <span id="userWelcome" style="margin-right: 10px;"></span>
-                <button id="adminBtn" class="btn btn-sm btn-secondary hidden" onclick="toggleAdmin()">Admin</button>
-                <button class="btn btn-sm btn-secondary" onclick="logout()">Cerrar Sesión</button>
+            <h3 id="nombreTienda">Mi Tienda</h3>
+            <button onclick="cerrarSesion()" style="width: auto; padding: 8px 15px;">Salir</button>
+        </div>
+        
+        <!-- SECCIÓN PRODUCTOS -->
+        <div id="seccionProductos">
+            <div class="productos" id="listaProductos">
+                <!-- Productos se cargan aquí -->
             </div>
         </div>
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <div class="main-content">
-            <!-- SIDEBAR -->
-            <div class="sidebar">
-                <ul class="nav-list">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active" onclick="showSection('productos')">🛒 Productos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('carrito')">🛍️ Carrito</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('perfil')">👤 Mi Perfil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('historial')">📋 Historial</a>
-                    </li>
-                </ul>
+        
+        <!-- SECCIÓN CARRITO -->
+        <div id="seccionCarrito" class="seccion hidden">
+            <h3>Mi Carrito</h3>
+            <div id="itemsCarrito"></div>
+            <div style="margin-top: 20px; text-align: right;">
+                <h4>Total: $<span id="totalCarrito">0</span></h4>
+                <button onclick="hacerPedido()">Hacer Pedido</button>
             </div>
-
-            <!-- CONTENIDO -->
-            <div class="content">
-                <!-- PRODUCTOS -->
-                <div id="productosSection">
-                    <h3>Productos Disponibles</h3>
-                    <div class="products-grid" id="productosGrid"></div>
-                </div>
-
-                <!-- CARRITO -->
-                <div id="carritoSection" class="hidden">
-                    <h3>Mi Carrito</h3>
-                    <div id="carritoItems"></div>
-                    <div style="margin-top: 20px; text-align: right;">
-                        <h4>Total: $<span id="carritoTotal">0</span></h4>
-                        <button class="btn btn-primary" onclick="enviarPedido()">Realizar Pedido</button>
-                    </div>
-                </div>
-
-                <!-- PERFIL -->
-                <div id="perfilSection" class="hidden">
-                    <h3>Mi Perfil</h3>
-                    <div class="form-group">
-                        <label>Nombre</label>
-                        <input type="text" id="perfilNombre" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>Teléfono</label>
-                        <input type="tel" id="perfilTelefono" class="form-control" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Nueva Contraseña (dejar en blanco para no cambiar)</label>
-                        <input type="password" id="perfilPassword" class="form-control">
-                    </div>
-                    <button class="btn btn-primary" onclick="guardarPerfil()">Guardar Cambios</button>
-                </div>
-
-                <!-- HISTORIAL -->
-                <div id="historialSection" class="hidden">
-                    <h3>Mis Pedidos</h3>
-                    <div id="historialList"></div>
-                </div>
-
-                <!-- PANEL ADMIN -->
-                <div id="adminPanel" class="admin-section hidden">
-                    <h3>Panel de Administración</h3>
-                    <div class="form-group">
-                        <label>Nombre de la Tienda</label>
-                        <input type="text" id="adminTiendaNombre" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>WhatsApp para Pedidos</label>
-                        <input type="tel" id="adminWhatsApp" class="form-control">
-                    </div>
-                    <button class="btn btn-primary" onclick="guardarAjustesAdmin()">Guardar Ajustes</button>
-
-                    <h4 style="margin-top: 30px;">Gestión de Productos</h4>
-                    <div id="adminProductosList"></div>
-
-                    <h4>Agregar Nuevo Producto</h4>
-                    <div class="product-form">
-                        <input type="text" id="nuevoProductoNombre" placeholder="Nombre del producto">
-                        <input type="number" id="nuevoProductoPrecio" placeholder="Precio" step="0.01">
-                        <input type="text" id="nuevoProductoImagen" placeholder="URL de imagen">
-                        <select id="nuevoProductoCategoria">
-                            <option value="cafe">Café</option>
-                            <option value="pan">Pan</option>
-                            <option value="bebida">Bebida</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" onclick="agregarProductoAdmin()" style="margin-top: 15px;">Agregar Producto</button>
-                </div>
-            </div>
+        </div>
+        
+        <!-- SECCIÓN PERFIL -->
+        <div id="seccionPerfil" class="seccion hidden">
+            <h3>Mi Perfil</h3>
+            <input type="text" id="perfilNombre" placeholder="Nombre">
+            <input type="text" id="perfilTelefono" placeholder="Teléfono" readonly>
+            <input type="password" id="perfilPass" placeholder="Nueva contraseña (opcional)">
+            <button onclick="guardarPerfil()">Guardar cambios</button>
+        </div>
+        
+        <!-- SECCIÓN HISTORIAL -->
+        <div id="seccionHistorial" class="seccion hidden">
+            <h3>Mis Pedidos</h3>
+            <div id="listaHistorial"></div>
+        </div>
+        
+        <!-- MENÚ INFERIOR -->
+        <div class="menu">
+            <div class="menu-item active" onclick="mostrar('productos')">🛒 Productos</div>
+            <div class="menu-item" onclick="mostrar('carrito')">🛍️ Carrito</div>
+            <div class="menu-item" onclick="mostrar('perfil')">👤 Perfil</div>
+            <div class="menu-item" onclick="mostrar('historial')">📋 Historial</div>
         </div>
     </div>
 
     <script>
-        // DATOS INICIALES
-        const ADMIN_USUARIO = {
-            telefono: "56666168",
-            password: "0012",
-            nombre: "Administrador",
-            tipo: "admin"
-        };
-
-        // INICIALIZAR DATOS
-        let usuarioActual = null;
+        // ====== DATOS INICIALES ======
+        let usuarioLogeado = null;
         let carrito = [];
+        
+        // Productos de ejemplo
         let productos = [
-            {
-                id: 1,
-                nombre: "Café Americano",
-                precio: 2.50,
-                categoria: "cafe",
-                imagen: "https://images.unsplash.com/photo-1498804103079-a6351b050096?w=400&h=300&fit=crop"
-            },
-            {
-                id: 2,
-                nombre: "Capuccino",
-                precio: 3.00,
-                categoria: "cafe",
-                imagen: "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w-400&h=300&fit=crop"
-            },
-            {
-                id: 3,
-                nombre: "Croissant",
-                precio: 1.80,
-                categoria: "pan",
-                imagen: "https://images.unsplash.com/photo-1555507036-ab794f27d2e9?w=400&h=300&fit=crop"
-            },
-            {
-                id: 4,
-                nombre: "Jugo de Naranja",
-                precio: 2.00,
-                categoria: "bebida",
-                imagen: "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&h=300&fit=crop"
-            }
+            {id: 1, nombre: "Café Americano", precio: 2.50, img: "https://images.unsplash.com/photo-1498804103079-a6351b050096?w=400&h=300&fit=crop"},
+            {id: 2, nombre: "Capuccino", precio: 3.00, img: "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=400&h=300&fit=crop"},
+            {id: 3, nombre: "Croissant", precio: 1.80, img: "https://images.unsplash.com/photo-1555507036-ab794f27d2e9?w=400&h=300&fit=crop"},
+            {id: 4, nombre: "Jugo Natural", precio: 2.00, img: "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&h=300&fit=crop"}
         ];
-
-        let clientes = [];
+        
+        // Usuarios (admin predefinido)
+        let usuarios = [
+            {id: 1, nombre: "Administrador", telefono: "56666168", password: "0012", tipo: "admin"}
+        ];
+        
         let pedidos = [];
-        let ajustes = {
-            nombreTienda: "Mini Tienda",
-            whatsapp: "1234567890"
-        };
-
-        // CARGAR DATOS DEL LOCALSTORAGE
-        function cargarDatos() {
-            try {
-                const productosGuardados = localStorage.getItem('productos');
-                const clientesGuardados = localStorage.getItem('clientes');
-                const pedidosGuardados = localStorage.getItem('pedidos');
-                const ajustesGuardados = localStorage.getItem('ajustes');
-                const usuarioGuardado = localStorage.getItem('usuarioActual');
-
-                if (productosGuardados) productos = JSON.parse(productosGuardados);
-                if (clientesGuardados) clientes = JSON.parse(clientesGuardados);
-                if (pedidosGuardados) pedidos = JSON.parse(pedidosGuardados);
-                if (ajustesGuardados) ajustes = JSON.parse(ajustesGuardados);
-                if (usuarioGuardado) {
-                    usuarioActual = JSON.parse(usuarioGuardado);
-                    iniciarTienda();
+        
+        // ====== FUNCIONES BÁSICAS ======
+        function mostrarLogin() {
+            document.getElementById('registro').classList.add('hidden');
+            document.getElementById('login').classList.remove('hidden');
+        }
+        
+        function mostrarRegistro() {
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('registro').classList.remove('hidden');
+        }
+        
+        function mostrarError(id, mensaje) {
+            const errorDiv = document.getElementById(id);
+            errorDiv.textContent = mensaje;
+            errorDiv.classList.remove('hidden');
+        }
+        
+        function limpiarError(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+        
+        // ====== LOGIN SIMPLE ======
+        function hacerLogin() {
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            
+            limpiarError('loginError');
+            
+            if (!user || !pass) {
+                mostrarError('loginError', 'Completa todos los campos');
+                return;
+            }
+            
+            // Buscar usuario
+            const usuario = usuarios.find(u => 
+                (u.telefono === user || u.nombre === user) && u.password === pass
+            );
+            
+            if (usuario) {
+                usuarioLogeado = usuario;
+                localStorage.setItem('usuarioLogeado', JSON.stringify(usuario));
+                iniciarTienda();
+            } else {
+                mostrarError('loginError', 'Usuario o contraseña incorrectos');
+            }
+        }
+        
+        // ====== REGISTRO SIMPLE ======
+        function hacerRegistro() {
+            const nombre = document.getElementById('regNombre').value.trim();
+            const telefono = document.getElementById('regUser').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const pass2 = document.getElementById('regPass2').value.trim();
+            
+            limpiarError('regError');
+            
+            // Validaciones básicas
+            if (!nombre || !telefono || !pass || !pass2) {
+                mostrarError('regError', 'Completa todos los campos');
+                return;
+            }
+            
+            if (pass !== pass2) {
+                mostrarError('regError', 'Las contraseñas no coinciden');
+                return;
+            }
+            
+            if (pass.length < 4) {
+                mostrarError('regError', 'La contraseña debe tener al menos 4 caracteres');
+                return;
+            }
+            
+            // Verificar si ya existe
+            if (usuarios.some(u => u.telefono === telefono)) {
+                mostrarError('regError', 'Este teléfono ya está registrado');
+                return;
+            }
+            
+            // Crear nuevo usuario
+            const nuevoUsuario = {
+                id: Date.now(),
+                nombre: nombre,
+                telefono: telefono,
+                password: pass,
+                tipo: "cliente"
+            };
+            
+            usuarios.push(nuevoUsuario);
+            usuarioLogeado = nuevoUsuario;
+            localStorage.setItem('usuarioLogeado', JSON.stringify(nuevoUsuario));
+            
+            // Guardar usuarios
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            
+            iniciarTienda();
+        }
+        
+        // ====== INICIAR TIENDA ======
+        function iniciarTienda() {
+            // Ocultar login/registro
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('registro').classList.add('hidden');
+            
+            // Mostrar tienda
+            document.getElementById('tienda').classList.remove('hidden');
+            
+            // Cargar datos guardados
+            cargarDatosGuardados();
+            
+            // Mostrar productos
+            mostrarProductos();
+            
+            // Cargar perfil
+            cargarPerfil();
+        }
+        
+        function cargarDatosGuardados() {
+            // Cargar usuarios
+            const usuariosGuardados = localStorage.getItem('usuarios');
+            if (usuariosGuardados) {
+                usuarios = JSON.parse(usuariosGuardados);
+            }
+            
+            // Cargar pedidos
+            const pedidosGuardados = localStorage.getItem('pedidos');
+            if (pedidosGuardados) {
+                pedidos = JSON.parse(pedidosGuardados);
+            }
+            
+            // Cargar carrito
+            const carritoGuardado = localStorage.getItem('carrito');
+            if (carritoGuardado) {
+                carrito = JSON.parse(carritoGuardado);
+            }
+        }
+        
+        // ====== PRODUCTOS ======
+        function mostrarProductos() {
+            const container = document.getElementById('listaProductos');
+            container.innerHTML = '';
+            
+            productos.forEach(producto => {
+                const div = document.createElement('div');
+                div.className = 'producto';
+                div.innerHTML = `
+                    <img src="${producto.img}" alt="${producto.nombre}">
+                    <h4>${producto.nombre}</h4>
+                    <p>Precio: $${producto.precio}</p>
+                    <button onclick="agregarACarrito(${producto.id})" style="width: 100%;">Agregar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function agregarACarrito(id) {
+            const producto = productos.find(p => p.id === id);
+            if (!producto) return;
+            
+            // Verificar si ya está en el carrito
+            const itemExistente = carrito.find(item => item.id === id);
+            
+            if (itemExistente) {
+                itemExistente.cantidad++;
+            } else {
+                carrito.push({
+                    ...producto,
+                    cantidad: 1
+                });
+            }
+            
+            // Guardar carrito
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            
+            alert(`${producto.nombre} agregado al carrito`);
+            
+            // Actualizar carrito si está visible
+            if (!document.getElementById('seccionCarrito').classList.contains('hidden')) {
+                mostrarCarrito();
+            }
+        }
+        
+        // ====== NAVEGACIÓN ======
+        function mostrar(seccion) {
+            // Ocultar todas las secciones
+            document.getElementById('seccionProductos').classList.add('hidden');
+            document.getElementById('seccionCarrito').classList.add('hidden');
+            document.getElementById('seccionPerfil').classList.add('hidden');
+            document.getElementById('seccionHistorial').classList.add('hidden');
+            
+            // Remover activo del menú
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(`seccion${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`).classList.remove('hidden');
+            
+            // Marcar como activo en el menú
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if (item.textContent.includes(seccion.charAt(0).toUpperCase() + seccion.slice(1))) {
+                    item.classList.add('active');
                 }
-            } catch (e) {
-                console.log("Error cargando datos:", e);
-                // Si hay error, usar datos por defecto
-                guardarDatos();
+            });
+            
+            // Actualizar contenido según sección
+            if (seccion === 'carrito') {
+                mostrarCarrito();
+            } else if (seccion === 'historial') {
+                mostrarHistorial();
             }
         }
-
-        // GUARDAR DATOS EN LOCALSTORAGE
-        function guardarDatos() {
-            localStorage.setItem('productos', JSON.stringify(productos));
-            localStorage.setItem('clientes', JSON.stringify(clientes));
+        
+        // ====== CARRITO ======
+        function mostrarCarrito() {
+            const container = document.getElementById('itemsCarrito');
+            const totalSpan = document.getElementById('totalCarrito');
+            
+            if (carrito.length === 0) {
+                container.innerHTML = '<p>El carrito está vacío</p>';
+                totalSpan.textContent = '0';
+                return;
+            }
+            
+            let total = 0;
+            container.innerHTML = '';
+            
+            carrito.forEach((item, index) => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                
+                const div = document.createElement('div');
+                div.className = 'carrito-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.nombre}</strong><br>
+                        $${item.precio} x ${item.cantidad} = $${subtotal.toFixed(2)}
+                    </div>
+                    <div>
+                        <button onclick="cambiarCantidad(${index}, -1)" style="width: auto; padding: 5px 10px;">-</button>
+                        <button onclick="cambiarCantidad(${index}, 1)" style="width: auto; padding: 5px 10px;">+</button>
+                        <button onclick="quitarDelCarrito(${index})" style="width: auto; padding: 5px 10px; background: red;">X</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            totalSpan.textContent = total.toFixed(2);
+        }
+        
+        function cambiarCantidad(index, cambio) {
+            carrito[index].cantidad += cambio;
+            
+            if (carrito[index].cantidad <= 0) {
+                carrito.splice(index, 1);
+            }
+            
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            mostrarCarrito();
+        }
+        
+        function quitarDelCarrito(index) {
+            if (confirm('¿Eliminar este producto del carrito?')) {
+                carrito.splice(index, 1);
+                localStorage.setItem('carrito', JSON.stringify(carrito));
+                mostrarCarrito();
+            }
+        }
+        
+        // ====== PEDIDOS ======
+        function hacerPedido() {
+            if (carrito.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+            
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            const pedido = {
+                id: Date.now(),
+                fecha: new Date().toLocaleString(),
+                cliente: usuarioLogeado.nombre,
+                telefono: usuarioLogeado.telefono,
+                productos: [...carrito],
+                total: total,
+                estado: 'Pendiente'
+            };
+            
+            pedidos.push(pedido);
             localStorage.setItem('pedidos', JSON.stringify(pedidos));
-            localStorage.setItem('ajustes', JSON.stringify(ajustes));
-            if (usuarioActual) {
-                localStorage.setItem('usuarioActual', JSON.stringify(usuarioActual));
-            }
+            
+            // Crear mensaje para WhatsApp
+            let mensaje = `NUEVO PEDIDO #${pedido.id}\n\n`;
+            mensaje += `Cliente: ${usuarioLogeado.nombre}\n`;
+            mensaje += `Teléfono: ${usuarioLogeado.telefono}\n\n`;
+            mensaje += `Productos:\n`;
+            
+            pedido.productos.forEach(item => {
+                mensaje += `- ${item.nombre} x${item.cantidad} - $${(item.precio * item.cantidad).toFixed(2)}\n`;
+            });
+            
+            mensaje += `\nTotal: $${total.toFixed(2)}`;
+            
+            // Limpiar carrito
+            carrito = [];
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            
+            alert('Pedido enviado!\nSe abrirá WhatsApp para enviar el pedido.');
+            
+            // Abrir WhatsApp (número fijo por ahora)
+            const url = `https://wa.me/1234567890?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+            
+            // Volver a productos
+            mostrar('productos');
+            mostrarCarrito();
         }
-
-        // MOSTRAR/OCULTAR PANTALLAS
-        function showLogin() {
-            document.getElementById('registerScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-        }
-
-        function showRegister() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('registerScreen').classList.remove('hidden');
-        }
-
-        // LOGIN SIMPLIFICADO
-        function login() {
-            const telefono = document.getElementById('loginTelefono').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+        
+        // ====== PERFIL ======
+        function cargarPerfil() {
+            if (!usuarioLogeado) return;
+            
+            document.getElementById('perfilNombre').va
